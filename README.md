@@ -253,3 +253,8 @@ Construiremos una app móvil y web (multi-plataforma) cuyo objetivo principal es
 
 ## 8. Nombre Propuesto para el Proyecto
 **BoxVista**  
+## Documentación
+- [Requisitos](docs/requisitos.md)
+- [Esquema de Base de Datos](docs/db_schema.md)
+- [Endpoints API](docs/api_endpoints.md)
+
