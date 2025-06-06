@@ -1,8 +1,25 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
 PASS src/tests/ping.test.ts
-PASS src/tests/app.test.ts
+FAIL src/tests/app.test.ts
+  ● basic routes › registers and logs in a user
 
-Test Suites: 2 passed, 2 total
-Tests:       2 passed, 2 total
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: 200
+    Received: 500
+
+      27 |       .post('/auth/register')
+      28 |       .send({ email: 'test@example.com', password: 'test' });
+    > 29 |     expect(res.statusCode).toBe(200);
+         |                            ^
+      30 |
+      31 |     const login = await supertest(app.server)
+      32 |       .post('/auth/login')
+
+      at Object.<anonymous> (src/tests/app.test.ts:29:28)
+
+Test Suites: 1 failed, 1 passed, 2 total
+Tests:       1 failed, 1 passed, 2 total
 Snapshots:   0 total
-Time:        5.679 s, estimated 9 s
+Time:        3.193 s, estimated 7 s
 Ran all test suites.
