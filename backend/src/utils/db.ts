@@ -7,7 +7,6 @@ import { Objeto } from '../entities/Objeto';
 import { CajaObjeto } from '../entities/CajaObjeto';
 import { HistorialEvento } from '../entities/HistorialEvento';
 
-
 let dataSource: DataSource;
 
 if (DATABASE_URL.startsWith('sqlite://')) {

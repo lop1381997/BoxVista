@@ -2,6 +2,7 @@ import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, OneToMany } f
 import { CajaObjeto } from './CajaObjeto';
 import { HistorialEvento } from './HistorialEvento';
 
+
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn } from 'typeorm
 
 @Entity()

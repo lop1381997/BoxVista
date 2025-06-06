@@ -104,6 +104,7 @@
 - [x] Configurar proyecto Xcode
   - [x] Crear nuevo proyecto en Swift (Single View App o SwiftUI).
   - [x] Configurar Podfile o Swift Package Manager:
+
 - [x] Asistente de Captura de Fotos
   - [x] Pantalla con instrucción breve para tomar fotos.
   - [x] Botón para abrir cámara y tomar 1–3 fotos (`UIImagePickerController` o API de cámara).
@@ -130,11 +131,12 @@
   - [ ] Mostrar metadatos: UUID, tipo, ubicación, estado.
   - [ ] Lista estática de “objetos esperados” (inicialmente vacía).
   - [ ] Botón “Verificar Contenido” para iniciar flujo de captura de fotos.
-- [ ] Asistente de Captura de Fotos
-  - [ ] Pantalla con instrucción breve para tomar fotos.
-  - [ ] Botón para abrir cámara y tomar 1–3 fotos (`UIImagePickerController` o API de cámara).
-  - [ ] Guardar fotos localmente en carpeta temporal.
-  - [ ] Mostrar previsualización de fotos y botón “Subir y Verificar”.
+- [x] Asistente de Captura de Fotos
+  - [x] Pantalla con instrucción breve para tomar fotos.
+  - [x] Botón para abrir cámara y tomar 1–3 fotos (`UIImagePickerController` o API de cámara).
+  - [x] Guardar fotos localmente en carpeta temporal.
+  - [x] Mostrar previsualización de fotos y botón “Subir y Verificar”.
+
 - [ ] Llamada a backend para verificación
   - [ ] Al tocar “Subir y Verificar”:
     - [ ] Empaquetar imágenes en multipart/form-data junto con token JWT.
@@ -143,12 +145,13 @@
   - [ ] Si hay faltantes o sobrantes:
     - [ ] Mostrar alerta con detalles.
     - [ ] Opciones: “Confirmar manualmente” o “Marcar como verificado de todas formas”.
-- [ ] Pantalla para edición manual de lista
-  - [ ] Listar `objetos_detectados` y `objetos_esperados`.
-  - [ ] Permitir:
-    - [ ] Marcar objetos detectados como “válidos”.
-    - [ ] Añadir objetos faltantes (campo de texto + cantidad).
-    - [ ] Eliminar objetos sobrantes.
+- [x] Pantalla para edición manual de lista
+  - [x] Listar `objetos_detectados` y `objetos_esperados`.
+  - [x] Permitir:
+    - [x] Marcar objetos detectados como “válidos”.
+    - [x] Añadir objetos faltantes (campo de texto + cantidad).
+    - [x] Eliminar objetos sobrantes.
+
   - [ ] Botón “Guardar Cambios” llama a endpoint para actualizar relación Caja-Objeto y crea evento en historial.
 - [ ] Historial de Eventos en la interfaz
   - [ ] Botón “Ver Historial” en detalle de caja.

@@ -11,3 +11,5 @@ backend/.env
 backend/box.db
 uploads/
 
+package-lock.json
+
