@@ -1,0 +1,12 @@
+# Node
+backend/node_modules/
+backend/dist/
+backend/.env
+
+# Environment
+*.env
+
+# Misc
+.DS_Store
+backend/box.db
+uploads/
