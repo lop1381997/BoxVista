@@ -1,4 +1,8 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, OneToMany } from 'typeorm';
+import { CajaObjeto } from './CajaObjeto';
+import { HistorialEvento } from './HistorialEvento';
+
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn } from 'typeorm
 
 @Entity()
 export class Caja {
@@ -16,4 +20,11 @@ export class Caja {
 
   @Column({ default: 'pendiente' })
   estado!: string;
+
+  @OneToMany(() => CajaObjeto, (co) => co.caja)
+  objetos!: CajaObjeto[];
+
+  @OneToMany(() => HistorialEvento, (he) => he.caja)
+  historial!: HistorialEvento[];
+
 }

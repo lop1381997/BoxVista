@@ -2,6 +2,7 @@ import 'reflect-metadata';
 import fastify from 'fastify';
 import cors from '@fastify/cors';
 import jwt from '@fastify/jwt';
+import multipart from '@fastify/multipart';
 import { JWT_SECRET } from './utils/config';
 import { AppDataSource } from './utils/db';
 import { authRoutes } from './routes/auth';
@@ -11,6 +12,7 @@ const app = fastify();
 
 app.register(cors);
 app.register(jwt, { secret: JWT_SECRET });
+app.register(multipart);
 
 app.get('/ping', async () => ({ pong: true }));
 

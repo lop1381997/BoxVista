@@ -57,7 +57,7 @@
 - [x] Crear endpoints CRUD de cajas
   - [x] POST `/cajas`
     - [x] Generar UUID automáticamente.
-    - [ ] Recibir tipo de caja y lista de objetos inicial (opcional).
+    - [x] Recibir tipo de caja y lista de objetos inicial (opcional).
     - [x] Insertar en tabla Cajas.
     - [x] Devolver UUID y datos.
   - [x] GET `/cajas/{uuid}`
@@ -65,16 +65,17 @@
     - [x] Devolver JSON.
   - [x] PUT `/cajas/{uuid}/ubicacion`
     - [x] Recibir nueva ubicación (texto).
-    - [ ] Actualizar registro en BD y crear evento en historial.
+    - [x] Actualizar registro en BD y crear evento en historial.
   - [x] GET `/cajas`
-    - [ ] Parámetros opcionales: estado, tipo, ubicación, fecha_última_verificación.
+    - [x] Parámetros opcionales: estado, tipo, ubicación, fecha_última_verificación.
     - [x] Devolver listado paginado.
-- [ ] Implementar subida y almacenamiento de imágenes
-  - [ ] Decidir estrategia de almacenamiento (local `/uploads/` o bucket S3).
-  - [ ] Endpoint POST `/cajas/{uuid}/verificar`: recibir imágenes (multipart/form-data) y almacenar.
-  - [ ] Validar tipos de archivo y tamaño máximo.
+- [x] Implementar subida y almacenamiento de imágenes
+  - [x] Decidir estrategia de almacenamiento (local `/uploads/` o bucket S3).
+  - [x] Endpoint POST `/cajas/{uuid}/verificar`: recibir imágenes (multipart/form-data) y almacenar.
+  - [x] Validar tipos de archivo y tamaño máximo.
 - [ ] Integrar motor de IA de detección de objetos
-  - [ ] Crear submódulo `services/vision.py`.
+  - [x] Crear submódulo `services/vision.py`.
+
   - [ ] Empezar con modelo genérico (YOLOv5 preentrenado).
   - [ ] Instalar dependencias (PyTorch, OpenCV).
   - [ ] Probar inferencia local con imágenes de ejemplo.
@@ -87,11 +88,11 @@
     - [ ] `objetos_esperados`
     - [ ] `faltantes`
     - [ ] `sobrantes`
-- [ ] Guardar registro en historial
-  - [ ] Cada llamada a `/cajas/{uuid}/verificar` crea un registro en **HistorialEventos** con:
-    - [ ] `tipo_evento = “verificacion_contenido”`
-    - [ ] `detalles` (listas de faltantes/sobrantes, usuario).
-  - [ ] Endpoint GET `/cajas/{uuid}/historial`.
+- [x] Guardar registro en historial
+  - [x] Cada llamada a `/cajas/{uuid}/verificar` crea un registro en **HistorialEventos** con:
+    - [x] `tipo_evento = “verificacion_contenido”`
+    - [x] `detalles` (listas de faltantes/sobrantes, usuario).
+  - [x] Endpoint GET `/cajas/{uuid}/historial`.
 - [ ] Probar flujo completo vía Postman/Insomnia
   - [ ] Crear caja.
   - [ ] Definir manualmente lista esperada.
@@ -100,9 +101,9 @@
 
 ### Fase 3: MVP iOS (Meses 1–4)
 
-- [ ] Configurar proyecto Xcode
-  - [ ] Crear nuevo proyecto en Swift (Single View App o SwiftUI).
-  - [ ] Configurar Podfile o Swift Package Manager:
+- [x] Configurar proyecto Xcode
+  - [x] Crear nuevo proyecto en Swift (Single View App o SwiftUI).
+  - [x] Configurar Podfile o Swift Package Manager:
     - [ ] Lector QR (`AVFoundation` o librería Cocoa para QR).
     - [ ] Cliente HTTP (`Alamofire` o `URLSession`).
     - [ ] Soporte para RFID/NFC (`CoreNFC`).
