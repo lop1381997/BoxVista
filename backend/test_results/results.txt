@@ -1,8 +1,8 @@
-PASS src/tests/ping.test.ts (7.315 s)
-PASS src/tests/app.test.ts (9.604 s)
+PASS src/tests/ping.test.ts
+PASS src/tests/app.test.ts
 
 Test Suites: 2 passed, 2 total
 Tests:       2 passed, 2 total
 Snapshots:   0 total
-Time:        10.402 s, estimated 13 s
+Time:        5.679 s, estimated 9 s
 Ran all test suites.

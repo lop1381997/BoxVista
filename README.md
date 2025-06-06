@@ -10,6 +10,7 @@ Construiremos una app móvil y web (multi-plataforma) cuyo objetivo principal es
 1. Se asigna a cada caja un **UUID único**, grabado en un tag RFID o un QR impreso (etiqueta adherida).  
 2. Al crear/llenar la caja, el usuario escanea el tag (RFID o QR) con la app para registrar esa caja.  
 3. La app guía al usuario para **tomar fotos** del interior de la caja (o utilizar una lista predefinida de objetos).  
+Actualmente la detección automática de objetos aún no está implementada; la app solo permite capturar fotos y gestionar la lista manualmente.
 4. Mediante IA de visión por computador (o reconocimiento de lista), la app reconoce automáticamente los objetos visibles.  
 5. Se coteja la lectura visual con la información en la base de datos:  
    - **Si concuerda**: la caja queda “verificada” con su contenido real.  

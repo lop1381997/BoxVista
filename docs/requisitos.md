@@ -5,6 +5,7 @@
 2. **Captura de fotos:** el usuario debe poder tomar de una a tres fotos del contenido de la caja para su análisis.
 3. **Subida de imágenes al backend:** las fotos tomadas deben enviarse al servidor para procesarlas mediante IA.
 4. **Validación manual de lista:** el usuario podrá confirmar o ajustar manualmente la lista de objetos detectados.
+*Por el momento, la detección automática mediante IA queda pendiente para futuras versiones.*
 
 ## Requisitos No Funcionales
 1. **Seguridad:** todas las comunicaciones deben realizarse sobre HTTPS; las credenciales y tokens deben almacenarse de forma segura.
