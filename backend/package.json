@@ -1,0 +1,22 @@
+{
+  "name": "boxvista-backend",
+  "version": "0.1.0",
+  "main": "dist/main.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/main.js",
+    "dev": "ts-node src/main.ts"
+  },
+  "dependencies": {
+    "fastify": "^4.23.2",
+    "@fastify/cors": "^8.3.1",
+    "@fastify/jwt": "^5.0.1",
+    "reflect-metadata": "^0.1.13",
+    "typeorm": "^0.3.17",
+    "pg": "^8.11.1"
+  },
+  "devDependencies": {
+    "typescript": "^5.2.2",
+    "ts-node": "^10.9.1"
+  }
+}
