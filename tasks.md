@@ -75,6 +75,7 @@
   - [x] Validar tipos de archivo y tamaño máximo.
 - [ ] Integrar motor de IA de detección de objetos
   - [x] Crear submódulo `services/vision.py`.
+
   - [ ] Empezar con modelo genérico (YOLOv5 preentrenado).
   - [ ] Instalar dependencias (PyTorch, OpenCV).
   - [ ] Probar inferencia local con imágenes de ejemplo.

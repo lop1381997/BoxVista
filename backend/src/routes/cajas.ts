@@ -1,7 +1,6 @@
 import { FastifyInstance } from 'fastify';
 import { AppDataSource } from '../utils/db';
 import { Caja } from '../entities/Caja';
-import { Objeto } from '../entities/Objeto';
 import { CajaObjeto } from '../entities/CajaObjeto';
 import { HistorialEvento } from '../entities/HistorialEvento';
 import { detectObjects } from '../services/vision';
@@ -20,7 +19,6 @@ export async function cajasRoutes(app: FastifyInstance) {
   });
 
   app.post('/cajas', async (request, reply) => {
-    const { tipo, objetos } = request.body as any;
     const caja = repo.create({ tipo });
     const result = await repo.save(caja);
 
@@ -35,20 +33,20 @@ export async function cajasRoutes(app: FastifyInstance) {
       }
     }
 
-    reply.send({ uuid: result.uuid, tipo: result.tipo });
+    const caja = repo.create({ tipo });
+    const result = await repo.save(caja);
   });
 
   app.put('/cajas/:uuid/ubicacion', async (request, reply) => {
     const uuid = (request.params as any).uuid;
-    const { ubicacion, usuario } = request.body as any;
-    const caja = await repo.findOneBy({ uuid });
+    const { ubicacion } = request.body as any;
     if (!caja) return reply.code(404).send({ message: 'Not found' });
     caja.ubicacion = ubicacion;
     await repo.save(caja);
-
     const histRepo = AppDataSource.getRepository(HistorialEvento);
     const evento = histRepo.create({ caja, tipo_evento: 'cambio_ubicacion', usuario, detalles: { ubicacion } });
     await histRepo.save(evento);
+
 
     reply.send({ uuid: caja.uuid, ubicacion: caja.ubicacion });
   });
@@ -61,6 +59,8 @@ export async function cajasRoutes(app: FastifyInstance) {
     if (ubicacion) where.ubicacion = ubicacion;
     // fecha_ultima_verificacion would require join with historial
     const cajas = await repo.find({ where });
+
+    const cajas = await repo.find();
     reply.send({ data: cajas, page: 1 });
   });
 
@@ -69,7 +69,6 @@ export async function cajasRoutes(app: FastifyInstance) {
     if (!caja) return reply.code(404).send({ message: 'Not found' });
     reply.send(caja);
   });
-
   app.post('/cajas/:uuid/verificar', async (request, reply) => {
     const uuid = (request.params as any).uuid;
     const caja = await repo.findOneBy({ uuid });

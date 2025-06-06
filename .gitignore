@@ -10,3 +10,4 @@ backend/.env
 .DS_Store
 backend/box.db
 uploads/
+
