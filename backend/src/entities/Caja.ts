@@ -2,6 +2,9 @@ import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, OneToMany } f
 import { CajaObjeto } from './CajaObjeto';
 import { HistorialEvento } from './HistorialEvento';
 
+
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn } from 'typeorm
+
 @Entity()
 export class Caja {
   @PrimaryGeneratedColumn('uuid')
@@ -24,4 +27,5 @@ export class Caja {
 
   @OneToMany(() => HistorialEvento, (he) => he.caja)
   historial!: HistorialEvento[];
+
 }

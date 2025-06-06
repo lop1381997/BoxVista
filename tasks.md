@@ -75,6 +75,7 @@
   - [x] Validar tipos de archivo y tamaño máximo.
 - [ ] Integrar motor de IA de detección de objetos
   - [x] Crear submódulo `services/vision.py`.
+
   - [ ] Empezar con modelo genérico (YOLOv5 preentrenado).
   - [ ] Instalar dependencias (PyTorch, OpenCV).
   - [ ] Probar inferencia local con imágenes de ejemplo.
@@ -103,17 +104,18 @@
 - [x] Configurar proyecto Xcode
   - [x] Crear nuevo proyecto en Swift (Single View App o SwiftUI).
   - [x] Configurar Podfile o Swift Package Manager:
-    - [ ] Lector QR (`AVFoundation` o librería Cocoa para QR).
-    - [ ] Cliente HTTP (`Alamofire` o `URLSession`).
-    - [ ] Soporte para RFID/NFC (`CoreNFC`).
-- [ ] Implementar pantalla de login
-  - [ ] Vista con campos “correo” y “contraseña”.
-  - [ ] Al iniciar sesión, guardar token JWT en Keychain o UserDefaults.
-  - [ ] Manejar errores: credenciales inválidas, sin conexión.
-- [ ] Pantalla principal (Dashboard)
-  - [ ] Tabla/listado de cajas recientes (GET `/cajas`).
-  - [ ] Mostrar UUID (parcial), estado (icono de color), fecha última verificación.
-  - [ ] Botón “+” para crear nueva caja.
+
+- [x] Asistente de Captura de Fotos
+  - [x] Pantalla con instrucción breve para tomar fotos.
+  - [x] Botón para abrir cámara y tomar 1–3 fotos (`UIImagePickerController` o API de cámara).
+  - [x] Guardar fotos localmente en carpeta temporal.
+  - [x] Mostrar previsualización de fotos y botón “Subir y Verificar”.
+- [x] Pantalla para edición manual de lista
+  - [x] Listar `objetos_detectados` y `objetos_esperados`.
+  - [x] Permitir:
+    - [x] Marcar objetos detectados como “válidos”.
+    - [x] Añadir objetos faltantes (campo de texto + cantidad).
+    - [x] Eliminar objetos sobrantes.
 - [ ] Función “Crear Caja”
   - [ ] Pantalla para elegir “Tipo de caja” (picker con valores hardcodeados).
   - [ ] Botón “Crear” llama a POST `/cajas`, recibe UUID.
@@ -134,6 +136,7 @@
   - [x] Botón para abrir cámara y tomar 1–3 fotos (`UIImagePickerController` o API de cámara).
   - [x] Guardar fotos localmente en carpeta temporal.
   - [x] Mostrar previsualización de fotos y botón “Subir y Verificar”.
+
 - [ ] Llamada a backend para verificación
   - [ ] Al tocar “Subir y Verificar”:
     - [ ] Empaquetar imágenes en multipart/form-data junto con token JWT.
@@ -148,6 +151,7 @@
     - [x] Marcar objetos detectados como “válidos”.
     - [x] Añadir objetos faltantes (campo de texto + cantidad).
     - [x] Eliminar objetos sobrantes.
+
   - [ ] Botón “Guardar Cambios” llama a endpoint para actualizar relación Caja-Objeto y crea evento en historial.
 - [ ] Historial de Eventos en la interfaz
   - [ ] Botón “Ver Historial” en detalle de caja.

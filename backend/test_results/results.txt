@@ -22,4 +22,13 @@ Test Suites: 1 failed, 1 passed, 2 total
 Tests:       1 failed, 1 passed, 2 total
 Snapshots:   0 total
 Time:        3.193 s, estimated 7 s
+=======
+PASS src/tests/ping.test.ts
+PASS src/tests/app.test.ts
+
+Test Suites: 2 passed, 2 total
+Tests:       2 passed, 2 total
+Snapshots:   0 total
+Time:        5.679 s, estimated 9 s
+
 Ran all test suites.

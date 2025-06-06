@@ -7,6 +7,9 @@
     "start": "node dist/main.js",
     "dev": "ts-node src/main.ts",
     "test": "jest"
+
+    "dev": "ts-node src/main.ts"
+
   },
   "dependencies": {
     "@fastify/cors": "^8.3.1",

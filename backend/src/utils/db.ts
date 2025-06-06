@@ -24,6 +24,7 @@ if (DATABASE_URL.startsWith('sqlite://')) {
     synchronize: true,
     logging: false,
     entities: [User, Caja, Objeto, CajaObjeto, HistorialEvento],
+
   });
 }
 
