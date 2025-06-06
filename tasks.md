@@ -30,9 +30,9 @@
 
 ### Fase 2: Implementación del backend MVP
 
-- [ ] Inicializar proyecto back-end
-  - [ ] Elegir framework (FastAPI en Python o Express.js en Node).
-  - [ ] Crear estructura de carpetas:
+- [x] Inicializar proyecto back-end
+  - [x] Elegir framework (FastAPI en Python o Express.js en Node).
+  - [x] Crear estructura de carpetas:
     ```
     backend/
       ├─ app/
@@ -45,30 +45,30 @@
       ├─ requirements.txt o package.json
       └─ .env
     ```
-- [ ] Configurar conexión a base de datos
-  - [ ] Instalar ORM (SQLAlchemy o Sequelize/TypeORM).
-  - [ ] Crear configuración en `.env` para cadena de conexión.
-  - [ ] Codificar modelos de datos según el esquema ER.
-  - [ ] Probar migraciones iniciales o creación de tablas.
-- [ ] Implementar sistema de autenticación básico
-  - [ ] Crear modelo de usuario (ID, correo, contraseña hashed, rol).
-  - [ ] Endpoint de registro y login (hash de contraseña, JWT o token simple).
-  - [ ] Middleware para proteger rutas según rol.
-- [ ] Crear endpoints CRUD de cajas
-  - [ ] POST `/cajas`
-    - [ ] Generar UUID automáticamente.
+- [x] Configurar conexión a base de datos
+  - [x] Instalar ORM (SQLAlchemy o Sequelize/TypeORM).
+  - [x] Crear configuración en `.env` para cadena de conexión.
+  - [x] Codificar modelos de datos según el esquema ER.
+  - [x] Probar migraciones iniciales o creación de tablas.
+- [x] Implementar sistema de autenticación básico
+  - [x] Crear modelo de usuario (ID, correo, contraseña hashed, rol).
+  - [x] Endpoint de registro y login (hash de contraseña, JWT o token simple).
+  - [x] Middleware para proteger rutas según rol.
+- [x] Crear endpoints CRUD de cajas
+  - [x] POST `/cajas`
+    - [x] Generar UUID automáticamente.
     - [ ] Recibir tipo de caja y lista de objetos inicial (opcional).
-    - [ ] Insertar en tabla Cajas.
-    - [ ] Devolver UUID y datos.
-  - [ ] GET `/cajas/{uuid}`
-    - [ ] Recuperar información de la caja (metadatos + últimos objetos detectados + estado).
-    - [ ] Devolver JSON.
-  - [ ] PUT `/cajas/{uuid}/ubicacion`
-    - [ ] Recibir nueva ubicación (texto).
+    - [x] Insertar en tabla Cajas.
+    - [x] Devolver UUID y datos.
+  - [x] GET `/cajas/{uuid}`
+    - [x] Recuperar información de la caja (metadatos + últimos objetos detectados + estado).
+    - [x] Devolver JSON.
+  - [x] PUT `/cajas/{uuid}/ubicacion`
+    - [x] Recibir nueva ubicación (texto).
     - [ ] Actualizar registro en BD y crear evento en historial.
-  - [ ] GET `/cajas`
+  - [x] GET `/cajas`
     - [ ] Parámetros opcionales: estado, tipo, ubicación, fecha_última_verificación.
-    - [ ] Devolver listado paginado.
+    - [x] Devolver listado paginado.
 - [ ] Implementar subida y almacenamiento de imágenes
   - [ ] Decidir estrategia de almacenamiento (local `/uploads/` o bucket S3).
   - [ ] Endpoint POST `/cajas/{uuid}/verificar`: recibir imágenes (multipart/form-data) y almacenar.

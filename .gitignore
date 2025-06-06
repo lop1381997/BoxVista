@@ -8,3 +8,4 @@ backend/.env
 
 # Misc
 .DS_Store
+backend/box.db
