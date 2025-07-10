@@ -1,0 +1,35 @@
+[
+  {
+    "id": 1,
+    "name": "Caja de herramientas",
+    "description": "Contiene un surtido básico de destornilladores, llaves y martillo.",
+    "objetos": [
+      { "id": "1-1", "nombre": "Destornillador Phillips #2", "state": "true" },
+      { "id": "1-2", "nombre": "Llave inglesa 200 mm" , "state": "true"},
+      { "id": "1-3", "nombre": "Martillo de carpintero" , "state": "true"}
+    ]
+  },
+  {
+    "id": 2,
+    "name": "Caja de cables",
+    "description": "Almacena cables HDMI, USB-C y adaptadores varios para informática.",
+    "objetos": [
+      { "id": "2-1", "nombre": "Cable HDMI 2 m", "state": "true"},
+      { "id": "2-2", "nombre": "Cable USB-C a USB-C 1 m", "state": "true"},
+      { "id": "2-3", "nombre": "Adaptador USB-C a Ethernet", "state": "true"},
+      { "id": "2-4", "nombre": "Adaptador HDMI a DVI", "state": "true"}
+    ]
+  },
+  {
+    "id": 3,
+    "name": "Caja de documentos",
+    "description": "Guarda contratos, facturas y manuales importantes en carpetas clasificadas.",
+    "objetos": [
+      { "id": "3-1", "nombre": "Contrato de arrendamiento 2025", "state": "true" },
+      { "id": "3-2", "nombre": "Factura equipo informático" , "state": "true"},
+      { "id": "3-3", "nombre": "Manual de usuario impresora", "state": "true" },
+      { "id": "3-4", "nombre": "Certificado de garantía", "state": "true" },
+      { "id": "3-5", "nombre": "Factura mensual electricidad", "state": "true" }
+    ]
+  }
+]

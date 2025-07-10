@@ -1,0 +1,17 @@
+[
+  {
+    "id": 1,
+    "name": "Caja de herramientas",
+    "description": "Contiene un surtido básico de destornilladores, llaves y martillo."
+  },
+  {
+    "id": 2,
+    "name": "Caja de cables",
+    "description": "Almacena cables HDMI, USB-C y adaptadores varios para informática.",
+  },
+  {
+    "id": 3,
+    "name": "Caja de documentos",
+    "description": "Guarda contratos, facturas y manuales importantes en carpetas clasificadas.",
+  }
+]
