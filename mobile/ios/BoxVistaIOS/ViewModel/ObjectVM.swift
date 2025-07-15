@@ -7,6 +7,7 @@
 
 
 import SwiftUI
+import Foundation
 
 /// View‑model responsable de exponer los objetos (`Item`) que pertenecen a una caja.
 /// 1. Inyecta un `ObjectServiceProtocol` para facilitar tests.
@@ -46,6 +47,20 @@ final class ObjectVM: ObservableObject {
     func updateObjectState(id: Int64, to newState: Bool) {
         guard let index = objects.firstIndex(where: { $0.id == id }) else { return }
         objects[index].state = newState
+
+        let updatedObject = objects[index]
+        NetworkManager.shared.updateObject(updatedObject, in: updatedObject.boxId) { [weak self] result in
+            DispatchQueue.main.async {
+                switch result {
+                case .success(let obj):
+                    if let idx = self?.objects.firstIndex(where: { $0.id == obj.id }) {
+                        self?.objects[idx] = obj
+                    }
+                case .failure(let error):
+                    print("Error updating object: \(error)")
+                }
+            }
+        }
     }
   
 }
