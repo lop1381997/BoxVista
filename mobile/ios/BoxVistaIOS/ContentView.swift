@@ -10,28 +10,32 @@ import SwiftUI
 struct Item: Identifiable {
     let id = UUID()
     var name: String
-    var isValid: Bool = false
+    var isValid: Bool = true
 }
 import UIKit
 
 struct ContentView: View {
+    @State private var selectedTab = 0
+    
     var body: some View {
-        TabView {
+        TabView(selection: $selectedTab) {
             HomeView()
                 .tabItem {
                     Label("Home", systemImage: "house")
                 }
+                .tag(0)
             
             SettingsView()
                 .tabItem {
                     Label("Settings", systemImage: "gear")
                 }
+                .tag(1)
             
-            AddBox()
+            AddBox(selectedTab: $selectedTab)
                 .tabItem {
                     Label("Add Box", systemImage: "plus")
                 }
-            
+                .tag(2)
         }
     }
 }

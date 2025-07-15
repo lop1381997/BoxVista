@@ -49,23 +49,58 @@ private struct BoxRow: View {
             Text((box.description)).font(.subheadline).foregroundColor(.secondary)
         }
         .padding(.vertical, 4)
+        
     }
 }
 
 struct BoxDetailView: View {
     let box: Box
     @ObservedObject private var vm  = ObjectVM()
-
+    @ObservedObject private var boxVM = BoxVM()
 
     var body: some View {
-        List {
-            Section("Descripción") { Text(box.description ) }
-            Section("Objetos") {
-                BoxDetailObjectsView(vm: vm)
+        VStack(spacing: 0) {
+            List {
+                Section("Descripción") { Text(box.description ) }
+                Section("Objetos") {
+                    BoxDetailObjectsView(vm: vm)
+                }
             }
+            .navigationTitle(box.name)
+            .onAppear { vm.load(boxId: box.id) }
+            
+            // Improved button styling
+            HStack(spacing: 20) {
+                Button("Borrar") {
+                    // Aquí podrías implementar la lógica para eliminar el objeto
+                    print("Eliminar objeto \("nombre")")
+                    Task {
+                        await boxVM.deleteBox(box)
+                    }
+                }
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 12)
+                .background(Color.red)
+                .foregroundColor(.white)
+                .cornerRadius(10)
+                .font(.system(size: 16, weight: .semibold))
+                
+                Button("Editar") {
+                    // Aquí podrías implementar la lógica para editar el objeto
+                    print("Editar objeto \("nombre")")
+                }
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 12)
+                .background(Color.blue)
+                .foregroundColor(.white)
+                .cornerRadius(10)
+                .font(.system(size: 16, weight: .semibold))
+            }
+            .padding(.horizontal, 20)
+            .padding(.vertical, 16)
+            .background(Color(.systemGray6))
+            .shadow(color: Color.black.opacity(0.1), radius: 2, x: 0, y: -1)
         }
-        .navigationTitle(box.name)
-        .onAppear { vm.load(boxId: box.id) }
     }
 }
 
@@ -83,6 +118,7 @@ struct BoxDetailObjectsView: View {
                 )) {
                     Text(object.nombre)
                 }
+                
             }
         }
     }

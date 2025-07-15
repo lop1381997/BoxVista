@@ -48,6 +48,41 @@ extension BoxServiceProtocol {
             }
         }
     }
+
+    /// Crea una nueva caja con sus objetos
+    /// - Parameters:
+    ///   - name: Nombre de la caja
+    ///   - description: Descripción de la caja
+    ///   - objects: Array de objetos que contendrá la caja
+    /// - Returns: La caja creada
+    func createBox(name: String, description: String, objects: [ObjectItem]) async throws -> Box {
+        try await withCheckedThrowingContinuation { continuation in
+            NetworkManager.shared.createBox(name: name, description: description, objects: objects) { result in
+                switch result {
+                case .success(let box):
+                    continuation.resume(returning: box)
+                case .failure(let error):
+                    continuation.resume(throwing: error)
+                }
+            }
+        }
+    }
+    
+    func deleteBox(box: Box) async throws {
+        try await withCheckedThrowingContinuation { continuation in
+            NetworkManager.shared.deleteBox(id: box.id) { result in
+                switch result {
+                case .success:
+                    continuation.resume()
+                case .failure(let error):
+                    continuation.resume(throwing: error)
+                }
+            }
+        }
+    }
+        
+            
+    
 }
 
 /// Servicio real que apunta a tu API Express/SQLite

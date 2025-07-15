@@ -49,7 +49,7 @@ final class ObjectVM: ObservableObject {
         objects[index].state = newState
 
         let updatedObject = objects[index]
-        NetworkManager.shared.updateObject(updatedObject, in: updatedObject.boxId) { [weak self] result in
+        service.updateObject(updatedObject, boxId: updatedObject.boxId) { [weak self] result in
             DispatchQueue.main.async {
                 switch result {
                 case .success(let obj):
