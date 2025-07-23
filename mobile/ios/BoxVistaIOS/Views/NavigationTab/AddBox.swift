@@ -62,7 +62,7 @@ struct AddBox: View {
                         newItem = ""
                     }
                 }.padding()
-                Button("Guardar Cambios") {
+                Button("Guardar") {
                     Task {
                         await saveBoxToBackend()
                     }

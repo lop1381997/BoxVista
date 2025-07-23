@@ -80,6 +80,19 @@ extension BoxServiceProtocol {
             }
         }
     }
+    
+    func updateBox(_ box: Box) async throws -> Box {
+        try await withCheckedThrowingContinuation { continuation in
+            NetworkManager.shared.updateBox(box) { result in
+                switch result {
+                case .success(let updatedBox):
+                    continuation.resume(returning: updatedBox)
+                case .failure(let error):
+                    continuation.resume(throwing: error)
+                }
+            }
+        }
+    }
         
             
     

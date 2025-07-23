@@ -13,7 +13,7 @@ struct HomeView: View {
     @ObservedObject private var vm = BoxVM()
     
     private var allObjects: [ObjectItem] {
-        vm.boxes.flatMap { $0.objects }
+         vm.boxes.flatMap { $0.objects }
     }
 
     var body: some View {
@@ -36,7 +36,7 @@ struct HomeView: View {
             .navigationDestination(for: Box.self) { box in
                 BoxDetailView(box: box)
             }
-            .task {  await vm.load() }
+            .task {   await vm.load() }
         }
     }
 }
@@ -53,11 +53,14 @@ private struct BoxRow: View {
     }
 }
 
+
 struct BoxDetailView: View {
     let box: Box
     @ObservedObject private var vm  = ObjectVM()
     @ObservedObject private var boxVM = BoxVM()
-
+    @State private var showConfirmation = false
+    @State private var showEdit = false
+    @Environment(\.dismiss) private var dismiss
     var body: some View {
         VStack(spacing: 0) {
             List {
@@ -67,16 +70,16 @@ struct BoxDetailView: View {
                 }
             }
             .navigationTitle(box.name)
-            .onAppear { vm.load(boxId: box.id) }
+            .task { await vm.load(boxId: box.id) }
             
             // Improved button styling
             HStack(spacing: 20) {
                 Button("Borrar") {
                     // Aquí podrías implementar la lógica para eliminar el objeto
                     print("Eliminar objeto \("nombre")")
-                    Task {
-                        await boxVM.deleteBox(box)
-                    }
+                    showConfirmation = true
+                    //
+                    
                 }
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 12)
@@ -84,10 +87,31 @@ struct BoxDetailView: View {
                 .foregroundColor(.white)
                 .cornerRadius(10)
                 .font(.system(size: 16, weight: .semibold))
+                .confirmationDialog("Estas segurop de borrar la caja?", isPresented: $showConfirmation)
+                {
+                    Button("Borrar", role: .destructive) {
+                        Task {
+                            await boxVM.deleteBox(box)
+                        }
+                        showConfirmation = false
+                        dismiss() // Cierra la vista después de borrar
+                        
+                    }
+                    Button("Cancelar", role: .cancel) {
+                        //cancelar
+                        
+                        
+                    }
+                    
+                }message: {
+                    Text("Estas segurop de borrar la caja? \nEsta acción no se puede deshacer.")
+                }
+                .sheet(isPresented: $showEdit) {
+                    UpdateBox(box: box)
+                }
                 
                 Button("Editar") {
-                    // Aquí podrías implementar la lógica para editar el objeto
-                    print("Editar objeto \("nombre")")
+                    showEdit = true
                 }
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 12)

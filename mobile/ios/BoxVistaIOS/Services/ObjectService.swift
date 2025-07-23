@@ -25,16 +25,17 @@ extension ObjectServiceProtocol {
     /// - Parameter boxId: Identificador de la caja
     /// - Throws: Error de red o decodificación
     /// - Returns: Array de `ObjectItem`
-    func getObjects(for boxId: Int64) throws -> [ObjectItem] {
-        let url = baseURL
-            .appendingPathComponent("boxes")
-            .appendingPathComponent("\(boxId)")
-            .appendingPathComponent("objects")
-        let data = try Data(contentsOf: url)
-        let decoder = JSONDecoder()
-        decoder.keyDecodingStrategy = .convertFromSnakeCase
-        let dtos = try decoder.decode([ObjectDTO].self, from: data)
-        return dtos.map { $0.toObjectItem() }
+    func getObjects(for boxId: Int64) async throws -> [ObjectItem] {
+        try await withCheckedThrowingContinuation { continuation in
+                NetworkManager.shared.fetchObjects(for: boxId) { result in
+                    switch result {
+                    case .success(let objects):
+                        continuation.resume(returning: objects)
+                    case .failure(let error):
+                        continuation.resume(throwing: error)
+                    }
+                }
+            }
     }
 
     /// Obtiene un objeto concreto dentro de una caja

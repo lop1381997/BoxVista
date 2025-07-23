@@ -85,5 +85,24 @@ class BoxVM: ObservableObject {
         
         isLoading = false
     }
+    
+    func updateBox(_ box: Box) async {
+        isLoading = true
+        errorMessage = nil
+        
+        do {
+            let updatedBox = try await service.updateBox(box)
+            // Update the local array with the updated box
+            if let index = boxes.firstIndex(where: { $0.id == updatedBox.id }) {
+                boxes[index] = updatedBox
+            }
+        } catch {
+            errorMessage = getErrorMessage(from: error)
+        }
+        
+        isLoading = false
+    }
+
+
         
 }

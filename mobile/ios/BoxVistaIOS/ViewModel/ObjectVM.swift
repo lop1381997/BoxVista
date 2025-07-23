@@ -31,8 +31,8 @@ final class ObjectVM: ObservableObject {
     // MARK: - Public API
     /// Carga los objetos que contiene la caja especificada.
     /// - Parameter boxId: Identificador de la caja.
-    func load(boxId: Int64) {
-        do { try objects = service.getObjects(for: boxId)}
+    func load(boxId: Int64) async {
+        do { try objects = await service.getObjects(for: boxId)}
         catch {
             print("Error al cargar los objetos: \(error)")
         }
