@@ -2,11 +2,16 @@ package com.hirlu.boxvista
 
 import com.hirlu.boxvista.Models.Box
 import com.hirlu.boxvista.Models.BoxDTO
-import com.hirlu.boxvista.Models.ObjectItemDTO
 import com.hirlu.boxvista.Models.ObjectItem
+import com.hirlu.boxvista.Models.ObjectItemDTO
 import retrofit2.Retrofit
-import retrofit2.http.*
 import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.http.Body
+import retrofit2.http.DELETE
+import retrofit2.http.GET
+import retrofit2.http.POST
+import retrofit2.http.PUT
+import retrofit2.http.Path
 
 /**
  * Retrofit-only NetworkManager (no explicit OkHttp usage).
@@ -77,7 +82,7 @@ object NetworkManager {
 
     suspend fun createBox(box: Box): Box = requireApi().createBox(box.toDto()).toDomain()
 
-    suspend fun updateBox(box: Box): Box = requireApi().updateBox(box.id, box.toDto()).toDomain()
+    suspend fun updateBox(box1: Long, box: Box): Box = requireApi().updateBox(box.id!!, box.toDto()).toDomain()
 
     suspend fun deleteBox(id: Long) { requireApi().deleteBox(id) }
 
