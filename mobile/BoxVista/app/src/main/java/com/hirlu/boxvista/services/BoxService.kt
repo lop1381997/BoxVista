@@ -1,14 +1,12 @@
 package com.hirlu.boxvista.services
 
+import android.util.Log
 import com.hirlu.boxvista.Models.Box
 import com.hirlu.boxvista.Models.ObjectItem
 import com.hirlu.boxvista.NetworkManager
 
 //
 interface BoxServiceProtocol {
-     var networkingManager : NetworkManager
-    fun init(baseUrl: String)
-
     suspend fun getBoxes(): List<Box>
     suspend fun getBox(id: Long): Box
     suspend fun createBox(name: String, description: String, objects: List<ObjectItem>): Box
@@ -16,26 +14,24 @@ interface BoxServiceProtocol {
     suspend fun updateBox(box: Box): Box
 }
 
-class BoxService(override var networkingManager: NetworkManager = NetworkManager) : BoxServiceProtocol {
-
-
-    override fun init(baseUrl: String) {
-        NetworkManager.init(baseUrl)
-        networkingManager = NetworkManager
-    }
-
-    private fun requireNM(): NetworkManager = requireNotNull(networkingManager) {
-        "NetworkManager no inicializado."
-    }
-
+class BoxService : BoxServiceProtocol {
 
     override suspend fun getBoxes(): List<Box> {
-        return requireNM().fetchBoxes()
-
+        Log.e("BoxService", "getBoxes() iniciado")
+        return try {
+            Log.e("BoxService", "getBoxes() - Llamando a NetworkManager.fetchBoxes()")
+            val result = NetworkManager.fetchBoxes()
+            Log.e("BoxService", "getBoxes() - SUCCESS: Recibidas ${result?.size ?: "null"} boxes")
+            Log.e("BoxService", "getBoxes() - Resultado: $result")
+            result
+        } catch (e: Exception) {
+            Log.e("BoxService", "getBoxes() - ERROR: ${e::class.simpleName}: ${e.message}", e)
+            throw e
+        }
     }
 
     override suspend fun getBox(id: Long): Box {
-        return requireNM().fetchBox(id)
+        return NetworkManager.fetchBox(id)
     }
 
     override suspend fun createBox(
@@ -43,29 +39,19 @@ class BoxService(override var networkingManager: NetworkManager = NetworkManager
         description: String,
         objects: List<ObjectItem>
     ): Box {
-        val box: Box = Box(
-            name = name, description = description, objects = objects.map{ it }.toMutableList()
+        val box = Box(
+            name = name,
+            description = description,
+            objects = objects.toMutableList()
         )
-       return requireNM().createBox(box)
+        return NetworkManager.createBox(box)
     }
 
-
-
     override suspend fun deleteBox(box: Box) {
-        requireNM().deleteBox(box.id!!)
+        NetworkManager.deleteBox(box.id!!)
     }
 
     override suspend fun updateBox(box: Box): Box {
-        return requireNM().updateBox(
-            box.id!!,
-            Box(
-                id = box.id,
-                name = box.name,
-                description = box.description,
-                objects = box.objects
-            )
-        )
+        return NetworkManager.updateBox(box.id!!, box)
     }
-
 }
-

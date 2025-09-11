@@ -1,5 +1,6 @@
 package com.hirlu.boxvista
 
+import android.util.Log
 import com.hirlu.boxvista.Models.Box
 import com.hirlu.boxvista.Models.BoxDTO
 import com.hirlu.boxvista.Models.ObjectItem
@@ -18,7 +19,14 @@ import retrofit2.http.Path
  *
  * Las excepciones de red se propagan (HttpException/IOException). Manejalas desde tu capa de UI/VM.
  */
+
+
 object NetworkManager {
+
+    enum class BaseURL(val url: String) {
+        LOCAL("http://10.0.2.2:3000/api/"),
+        REMOTE("https://your-prod-host/api/")
+    }
 
     // ───────────────────────────── API ─────────────────────────────
     private interface ApiService {
@@ -64,25 +72,62 @@ object NetworkManager {
 
     @Volatile private var api: ApiService? = null
 
-    fun init(baseUrl: String) {
-        this.api = Retrofit.Builder()
-            .baseUrl(baseUrl)
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-            .create(ApiService::class.java)
+    fun init(baseUrl: BaseURL = BaseURL.LOCAL) {
+        Log.e("NetworkManager", "init() iniciado con baseUrl: ${baseUrl.url}")
+        try {
+            this.api = Retrofit.Builder()
+                .baseUrl(baseUrl.url)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build()
+                .create(ApiService::class.java)
+            Log.e("NetworkManager", "init() - SUCCESS: API creada exitosamente")
+        } catch (e: Exception) {
+            Log.e("NetworkManager", "init() - ERROR: ${e::class.simpleName}: ${e.message}", e)
+            throw e
+        }
     }
-    private fun requireApi(): ApiService = requireNotNull(api) {
-        "NetworkManager no inicializado. Llama a NetworkManager.init(baseUrl) al inicio de la app."
+
+    private fun requireApi(): ApiService {
+        Log.e("NetworkManager", "requireApi() - Verificando si API está inicializada")
+        val apiInstance = api
+        if (apiInstance == null) {
+            Log.e("NetworkManager", "requireApi() - ERROR: API no inicializada")
+            throw IllegalStateException("NetworkManager no inicializado. Llama a NetworkManager.init(baseUrl) al inicio de la app.")
+        }
+        Log.e("NetworkManager", "requireApi() - SUCCESS: API encontrada")
+        return apiInstance
     }
 
     // ──────────────────────── Métodos públicos suspend ─────────────────────────
-    suspend fun fetchBoxes(): List<Box> = requireApi().fetchBoxes().map { it.toDomain() }
+    suspend fun fetchBoxes(): List<Box> {
+        Log.e("NetworkManager", "fetchBoxes() iniciado")
+        return try {
+            Log.e("NetworkManager", "fetchBoxes() - Obteniendo API instance")
+            val apiInstance = requireApi()
+            Log.e("NetworkManager", "fetchBoxes() - Llamando a apiInstance.fetchBoxes()")
+            val boxDTOs = apiInstance.fetchBoxes()
+            Log.e("NetworkManager", "fetchBoxes() - Recibidos ${boxDTOs?.size ?: "null"} BoxDTOs")
+            Log.e("NetworkManager", "fetchBoxes() - BoxDTOs content: $boxDTOs")
+            Log.e("NetworkManager", "fetchBoxes() - Mapeando DTOs a dominio")
+            val result = boxDTOs.map { dto ->
+                Log.e("NetworkManager", "fetchBoxes() - Mapeando DTO: $dto")
+                val domainBox = dto.toDomain()
+                Log.e("NetworkManager", "fetchBoxes() - DTO mapeado a: $domainBox")
+                domainBox
+            }
+            Log.e("NetworkManager", "fetchBoxes() - SUCCESS: Resultado final: $result")
+            result
+        } catch (e: Exception) {
+            Log.e("NetworkManager", "fetchBoxes() - ERROR: ${e::class.simpleName}: ${e.message}", e)
+            throw e
+        }
+    }
 
     suspend fun fetchBox(id: Long): Box = requireApi().fetchBox(id).toDomain()
 
     suspend fun createBox(box: Box): Box = requireApi().createBox(box.toDto()).toDomain()
 
-    suspend fun updateBox(box1: Long, box: Box): Box = requireApi().updateBox(box.id!!, box.toDto()).toDomain()
+    suspend fun updateBox(id: Long, box: Box): Box = requireApi().updateBox(id, box.toDto()).toDomain()
 
     suspend fun deleteBox(id: Long) { requireApi().deleteBox(id) }
 
@@ -111,7 +156,7 @@ object NetworkManager {
 
     private fun ObjectItem.toDto(): ObjectItemDTO = ObjectItemDTO(
         id = id,
-        nombre = nombre,
+        nombre = name,
         state = state,
         boxId = boxId
     )

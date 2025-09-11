@@ -36,13 +36,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.hirlu.boxvista.ui.theme.BoxVistaTheme
+import com.hirlu.boxvista.views.HomeScreen.HomeScreenView
 
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        NetworkManager.init(BuildConfig.API_BASE_URL)
+        NetworkManager.init()
         setContent {
             TabScreen()
         }
@@ -93,12 +94,7 @@ fun TabScreen() {
     }
 }
 
-@Composable
-fun HomeScreenView(){
-    Column(modifier = Modifier.padding(16.dp)) {
-        Text("Home Screen Content")
-    }
-}
+
 
 
 
