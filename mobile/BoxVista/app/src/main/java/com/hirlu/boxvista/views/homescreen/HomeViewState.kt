@@ -1,6 +1,6 @@
-package com.hirlu.boxvista.views.home
+package com.hirlu.boxvista.views.homescreen
 
-import com.hirlu.boxvista.Models.Box
+import com.hirlu.boxvista.models.Box
 
 data class HomeViewState(
     val boxes: List<Box> = emptyList(),

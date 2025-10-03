@@ -1,63 +1,14 @@
 //
-//  Home Screen.swift
+//  BoxDetailView.swift
 //  BoxVistaIOS
 //
-//  Created by pol linger on 6/6/25.
+//  Created by pol linger on 10/9/25.
 //
-
 import SwiftUI
-
-
-
-struct HomeView: View {
-    @ObservedObject private var vm = BoxVM()
-    
-    private var allObjects: [ObjectItem] {
-         vm.boxes.flatMap { $0.objects }
-    }
-
-    var body: some View {
-        NavigationStack {
-            List {
-                Section("Cajas") {
-                    ForEach(vm.boxes) { box in
-                        NavigationLink(value: box) {
-                            BoxRow(box: box)
-                        }
-                    }
-                }
-                Section("Objetos (todas las cajas)") {
-                    ForEach(allObjects, id: \.id) { object in
-                        Text(object.nombre)
-                    }
-                }
-            }
-            .navigationTitle("Boxes")
-            .navigationDestination(for: Box.self) { box in
-                BoxDetailView(box: box)
-            }
-            .task {   await vm.load() }
-        }
-    }
-}
-
-private struct BoxRow: View {
-    let box: Box
-    var body: some View {
-        VStack(alignment: .leading, spacing: 2) {
-            Text(box.name).font(.headline)
-            Text((box.description)).font(.subheadline).foregroundColor(.secondary)
-        }
-        .padding(.vertical, 4)
-        
-    }
-}
-
 
 struct BoxDetailView: View {
     let box: Box
-    @ObservedObject private var vm  = ObjectVM()
-    @ObservedObject private var boxVM = BoxVM()
+    @StateObject private var vm  = BoxDetailViewVM()
     @State private var showConfirmation = false
     @State private var showEdit = false
     @Environment(\.dismiss) private var dismiss
@@ -70,7 +21,7 @@ struct BoxDetailView: View {
                 }
             }
             .navigationTitle(box.name)
-            .task { await vm.load(boxId: box.id) }
+            .task { await vm.load(boxID: box.id) }
             
             // Improved button styling
             HStack(spacing: 20) {
@@ -87,15 +38,14 @@ struct BoxDetailView: View {
                 .foregroundColor(.white)
                 .cornerRadius(10)
                 .font(.system(size: 16, weight: .semibold))
-                .confirmationDialog("Estas segurop de borrar la caja?", isPresented: $showConfirmation)
+                .confirmationDialog("Estas seguro de borrar la caja?", isPresented: $showConfirmation)
                 {
                     Button("Borrar", role: .destructive) {
                         Task {
-                            await boxVM.deleteBox(box)
+                            let ok = await vm.deleteBox()
+                            showConfirmation = false
+                            if ok { dismiss() }
                         }
-                        showConfirmation = false
-                        dismiss() // Cierra la vista después de borrar
-                        
                     }
                     Button("Cancelar", role: .cancel) {
                         //cancelar
@@ -129,27 +79,23 @@ struct BoxDetailView: View {
 }
 
 struct BoxDetailObjectsView: View {
-    @ObservedObject  var vm : ObjectVM
+    @ObservedObject var vm: BoxDetailViewVM
     
     var body: some View {
-        ForEach(vm.objects) { object in
+        ForEach(vm.objects, id: \.id) { object in
             HStack {
                 Toggle(isOn: Binding(
                     get: { object.state },
                     set: { newValue in
-                        vm.updateObjectState(id: object.id, to: newValue)
+                        vm.updateObjectState(id: object.id, to: newState(newValue, current: object.state))
                     }
                 )) {
                     Text(object.nombre)
                 }
-                
             }
         }
     }
-}
-
-
-
-#Preview {
-    HomeView()
+    
+    // Helper to avoid stale value warnings in Toggle bindings
+    private func newState(_ value: Bool, current: Bool) -> Bool { value }
 }

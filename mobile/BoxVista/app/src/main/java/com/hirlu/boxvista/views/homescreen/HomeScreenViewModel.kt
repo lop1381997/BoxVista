@@ -1,4 +1,4 @@
-package com.hirlu.boxvista.views.home
+package com.hirlu.boxvista.views.homescreen
 
 import android.util.Log
 import androidx.lifecycle.ViewModel

@@ -1,10 +1,10 @@
 package com.hirlu.boxvista
 
 import android.util.Log
-import com.hirlu.boxvista.Models.Box
-import com.hirlu.boxvista.Models.BoxDTO
-import com.hirlu.boxvista.Models.ObjectItem
-import com.hirlu.boxvista.Models.ObjectItemDTO
+import com.hirlu.boxvista.models.Box
+import com.hirlu.boxvista.models.BoxDTO
+import com.hirlu.boxvista.models.ObjectItem
+import com.hirlu.boxvista.models.ObjectItemDTO
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.Body
@@ -47,6 +47,8 @@ object NetworkManager {
 
         @GET("boxes/{boxId}/objects")
         suspend fun fetchObjects(@Path("boxId") boxId: Long): List<ObjectItemDTO>
+        @GET("boxes/{boxId}/objects/{id}")
+        suspend fun fetchObject(@Path("boxId") boxId: Long, @Path("id") objectid: Long):ObjectItemDTO
 
         @POST("boxes/{boxId}/objects")
         suspend fun createObject(
@@ -56,7 +58,7 @@ object NetworkManager {
 
         @PUT("boxes/{boxId}/objects/{id}")
         suspend fun updateObject(
-            @Path("boxId") boxId: Long,
+            @Path("boxId") boxId: Int,
             @Path("id") id: Long,
             @Body body: ObjectItemDTO,
         ): ObjectItemDTO
@@ -133,11 +135,13 @@ object NetworkManager {
 
     suspend fun fetchObjects(boxId: Long): List<ObjectItem> =
         requireApi().fetchObjects(boxId).map { it.toDomain() }
+    suspend fun fetchObject(boxId: Long, id: Long): ObjectItem =
+        requireApi().fetchObject(boxId, id).toDomain()
 
     suspend fun createObject(boxId: Long, obj: ObjectItem): ObjectItem =
         requireApi().createObject(boxId, obj.toDto()).toDomain()
 
-    suspend fun updateObject(boxId: Long, obj: ObjectItem): ObjectItem =
+    suspend fun updateObject(boxId: Int, obj: ObjectItem): ObjectItem =
         requireApi().updateObject(boxId, obj.id, obj.toDto()).toDomain()
 
     suspend fun deleteObject(boxId: Long, objectId: Long) { requireApi().deleteObject(boxId, objectId) }
@@ -149,7 +153,7 @@ object NetworkManager {
         id = id,
         name = name,
         description = description,
-        objects = objects.map { it.toDto() }.toMutableList()
+        objetos = objects.map { it.toDto() }.toMutableList()
     )
 
     private fun ObjectItemDTO.toDomain(): ObjectItem = this.toObject()

@@ -1,9 +1,9 @@
 package com.hirlu.boxvista.services
 
 import android.util.Log
-import com.hirlu.boxvista.Models.Box
-import com.hirlu.boxvista.Models.ObjectItem
 import com.hirlu.boxvista.NetworkManager
+import com.hirlu.boxvista.models.Box
+import com.hirlu.boxvista.models.ObjectItem
 
 //
 interface BoxServiceProtocol {
@@ -21,6 +21,7 @@ class BoxService : BoxServiceProtocol {
         return try {
             Log.e("BoxService", "getBoxes() - Llamando a NetworkManager.fetchBoxes()")
             val result = NetworkManager.fetchBoxes()
+
             Log.e("BoxService", "getBoxes() - SUCCESS: Recibidas ${result?.size ?: "null"} boxes")
             Log.e("BoxService", "getBoxes() - Resultado: $result")
             result

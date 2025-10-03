@@ -1,12 +1,21 @@
-package com.hirlu.boxvista.Models
+package com.hirlu.boxvista.models
 
-data class Box(val id:Long? =null, val name: String, val description:String, val objects: MutableList<ObjectItem>)
+import com.google.gson.annotations.SerializedName
 
-data class BoxDTO(val id:Long? = null, val name: String, val description:String, val objects: MutableList<ObjectItemDTO>?){
+data class Box(val id: Long? =null, val name: String, val description: String, val objects: MutableList<out ObjectItem>)
+
+data class BoxDTO(
+    val id:Long? = null,
+    val name: String,
+    val description:String,
+    @SerializedName("objetos")
+    val objetos: MutableList<ObjectItemDTO>?
+){
     fun toBox(): Box {
-        return Box(id = id,
+        return Box(
+            id = id,
             name = name,
             description = description,
-            objects = objects?.map { it.toObject() }?.toMutableList() ?: mutableListOf())
+            objects = objetos?.map { it.toObject() }?.toMutableList() ?: mutableListOf())
     }
 }

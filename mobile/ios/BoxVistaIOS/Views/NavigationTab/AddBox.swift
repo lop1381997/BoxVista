@@ -19,6 +19,7 @@ struct AddBox: View {
     
     @State private var showAlert = false
     @State private var alertMessage = ""
+    @State private var isSaving = false
     
     // Add binding for tab selection
     @Binding var selectedTab: Int
@@ -26,16 +27,26 @@ struct AddBox: View {
     var body: some View {
         NavigationView {
             VStack {
-                
-                Spacer()
                 List {
-                    ForEach($items) { $item in
+                    ForEach(Array(items.enumerated()), id: \.offset) { (index, item) in
                         HStack {
-                            Toggle(isOn: $item.isValid) {
+                            Toggle(
+                                isOn: Binding(
+                                    get: {
+                                        items.indices.contains(index) ? items[index].isValid : false
+                                    },
+                                    set: { newValue in
+                                        if items.indices.contains(index) {
+                                            items[index].isValid = newValue
+                                        }
+                                    }
+                                )
+                            ) {
                                 Text(item.name)
                             }
                         }
-                    }.onDelete { indexSet in
+                    }
+                    .onDelete { indexSet in
                         items.remove(atOffsets: indexSet)
                     }
                 }
@@ -67,10 +78,10 @@ struct AddBox: View {
                         await saveBoxToBackend()
                     }
                 }
-                .disabled(boxVM.isLoading || boxName.isEmpty)
+                .disabled(isSaving || boxName.isEmpty)
                 .padding()
                 
-                if boxVM.isLoading {
+                if isSaving {
                     ProgressView("Guardando...")
                         .padding()
                 }
@@ -90,6 +101,15 @@ struct AddBox: View {
                     showAlert = true
                 }
             }
+            .onChange(of: showAlert) { _, isPresented in
+                if !isPresented {
+                    // Alert dismissed: now it's safe to clear the form and navigate
+                    resetForm()
+                    withAnimation {
+                        selectedTab = 0
+                    }
+                }
+            }
         }
     }
     
@@ -99,6 +119,11 @@ struct AddBox: View {
             alertMessage = "El nombre de la caja es obligatorio"
             showAlert = true
             return
+        }
+        
+        // Mark as saving
+        await MainActor.run {
+            isSaving = true
         }
         
         // Convert items to ObjectItem format expected by backend
@@ -119,14 +144,20 @@ struct AddBox: View {
         )
         
         if let box = createdBox {
-            alertMessage = "¡Caja '\(box.name)' creada exitosamente!"
-            showAlert = true
-            resetForm()
-            
-            // Navigate to HomeView after successful save
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
-                selectedTab = 0 // Switch to Home tab
+            await MainActor.run {
+                alertMessage = "¡Caja '\(box.name)' creada exitosamente!"
+                showAlert = true
             }
+            // Auto-dismiss alert to avoid blocking UI and trigger navigation in onChange
+            Task { @MainActor in
+                try? await Task.sleep(nanoseconds: 1_200_000_000)
+                showAlert = false
+            }
+        }
+        
+        // Ensure we clear saving state even if backend succeeds or fails
+        await MainActor.run {
+            isSaving = false
         }
         // Error handling is done through BoxVM.errorMessage and onChange modifier
     }
