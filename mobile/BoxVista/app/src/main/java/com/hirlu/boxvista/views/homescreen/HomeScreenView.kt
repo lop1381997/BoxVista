@@ -29,22 +29,45 @@ fun HomeScreenView(
     LaunchedEffect(Unit) { viewModel.loadBoxes() }
 
     when {
-        state.isLoading -> Text("Cargando…")
-        state.error != null -> Column {
-            Text("Error: ${state.error}")
-            Button(onClick = viewModel::retry) { Text("Reintentar") }
+        state.isLoading -> {
+            Text("Cargando…")
         }
-        state.isEmpty -> Text("No hay cajas todavía.")
-        else -> LazyColumn(
-            modifier = Modifier
-                .padding(4.dp)
-                .fillMaxWidth(),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            state.boxes.forEach { box ->
-                item { HomeScreenBoxViewBox(box)}
+        state.error != null -> {
+            Column {
+                Text("Error: ${state.error}")
+                Button(onClick = viewModel::retry) { Text("Reintentar") }
+            }
+        }
+        state.isEmpty -> {
+            Text("No hay cajas todavía.")
+        }
+        else -> {
+            LazyColumn(
+                modifier = Modifier
+                    .padding(4.dp)
+                    .fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                state.boxes.forEach { box ->
+                    item { HomeScreenBoxViewBox(box) }
+                }
+
             }
 
+            LazyColumn(
+                modifier = Modifier
+                    .padding(4.dp)
+                    .fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                item {
+                    state.boxes.forEach { box ->
+                        if (box.objects.isNotEmpty()) {
+                             HomeScreenBoxViewObjects(box.objects)
+                        }
+                    }
+                }
+            }
         }
     }
 }
@@ -75,7 +98,20 @@ fun HomeScreenBoxViewBox(box : Box){
 }
 
 @Composable
-fun HomeScreenBoxViewObjects(){
+fun HomeScreenBoxViewObjects(items: List<ObjectItem> = listOf()){
+    Card (
+        modifier = Modifier
+            .padding(4.dp)
+            .fillMaxWidth()
+    ){
+        items.forEach {
+            Text("🔧 ${it.name}",
+                modifier = Modifier
+                    .padding(4.dp)
+                    .align(Alignment.CenterHorizontally)
+            )
+        }
+    }
 }
 
 @Preview(showBackground = true)
