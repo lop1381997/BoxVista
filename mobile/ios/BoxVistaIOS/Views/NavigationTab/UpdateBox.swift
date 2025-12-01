@@ -83,7 +83,6 @@ struct UpdateBox: View {
                                 alertMessage = boxVM.errorMessage ?? "Error al actualizar la caja."
                             }
                             showAlert = true
-                            resetForm()
                         }
                     }
                     .disabled(boxVM.isLoading || boxName.isEmpty)
@@ -98,7 +97,9 @@ struct UpdateBox: View {
             .ignoresSafeArea(.keyboard, edges: .bottom)
             .navigationTitle("BoxVista")
             .alert("Resultado", isPresented: $showAlert) {
-                Button("OK") { }
+                Button("OK") {
+                    dismiss() // cierra la pantalla actual
+                }
             } message: {
                 Text(alertMessage)
             }
@@ -134,7 +135,6 @@ struct UpdateBox: View {
         
         _ = await boxVM.updateBox(boxupdated)
         
-        dismiss() // Cierra la vista después de actualizar
     }
     
     private func resetForm() {
