@@ -98,7 +98,7 @@ struct UpdateBox: View {
             .navigationTitle("BoxVista")
             .alert("Resultado", isPresented: $showAlert) {
                 Button("OK") {
-                    dismiss()
+                    dismiss() // cierra la pantalla actual
                 }
             } message: {
                 Text(alertMessage)

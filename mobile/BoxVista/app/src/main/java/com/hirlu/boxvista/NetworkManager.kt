@@ -75,52 +75,40 @@ object NetworkManager {
     @Volatile private var api: ApiService? = null
 
     fun init(baseUrl: BaseURL = BaseURL.LOCAL) {
-        Log.e("NetworkManager", "init() iniciado con baseUrl: ${baseUrl.url}")
+        init(baseUrl.url)
+    }
+
+    fun init(baseUrl: String) {
         try {
             this.api = Retrofit.Builder()
-                .baseUrl(baseUrl.url)
+                .baseUrl(baseUrl)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build()
                 .create(ApiService::class.java)
-            Log.e("NetworkManager", "init() - SUCCESS: API creada exitosamente")
         } catch (e: Exception) {
-            Log.e("NetworkManager", "init() - ERROR: ${e::class.simpleName}: ${e.message}", e)
             throw e
         }
     }
 
     private fun requireApi(): ApiService {
-        Log.e("NetworkManager", "requireApi() - Verificando si API está inicializada")
         val apiInstance = api
         if (apiInstance == null) {
-            Log.e("NetworkManager", "requireApi() - ERROR: API no inicializada")
             throw IllegalStateException("NetworkManager no inicializado. Llama a NetworkManager.init(baseUrl) al inicio de la app.")
         }
-        Log.e("NetworkManager", "requireApi() - SUCCESS: API encontrada")
         return apiInstance
     }
 
     // ──────────────────────── Métodos públicos suspend ─────────────────────────
     suspend fun fetchBoxes(): List<Box> {
-        Log.e("NetworkManager", "fetchBoxes() iniciado")
         return try {
-            Log.e("NetworkManager", "fetchBoxes() - Obteniendo API instance")
             val apiInstance = requireApi()
-            Log.e("NetworkManager", "fetchBoxes() - Llamando a apiInstance.fetchBoxes()")
             val boxDTOs = apiInstance.fetchBoxes()
-            Log.e("NetworkManager", "fetchBoxes() - Recibidos ${boxDTOs?.size ?: "null"} BoxDTOs")
-            Log.e("NetworkManager", "fetchBoxes() - BoxDTOs content: $boxDTOs")
-            Log.e("NetworkManager", "fetchBoxes() - Mapeando DTOs a dominio")
             val result = boxDTOs.map { dto ->
-                Log.e("NetworkManager", "fetchBoxes() - Mapeando DTO: $dto")
                 val domainBox = dto.toDomain()
-                Log.e("NetworkManager", "fetchBoxes() - DTO mapeado a: $domainBox")
                 domainBox
             }
-            Log.e("NetworkManager", "fetchBoxes() - SUCCESS: Resultado final: $result")
             result
         } catch (e: Exception) {
-            Log.e("NetworkManager", "fetchBoxes() - ERROR: ${e::class.simpleName}: ${e.message}", e)
             throw e
         }
     }
