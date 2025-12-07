@@ -14,6 +14,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Icon
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
@@ -47,7 +48,7 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun TabScreen() {
     BoxVistaTheme {
-        val tabItems = listOf(
+        val tabItems: List<Pair<String, ImageVector>> = listOf(
             "Home" to Icons.Filled.Home,
             "Settings" to Icons.Filled.Settings,
             "Add Box" to Icons.Filled.Add
