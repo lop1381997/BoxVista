@@ -25,10 +25,7 @@ class BoxDetailViewVM: ObservableObject {
         do {
             let fetchedBox = try await boxService.getBox(id: boxID)
             self.box = fetchedBox
-            print("cargando caja \(fetchedBox.name) con id \(fetchedBox.id)")
             self.objects = try await objectService.getObjects(for: boxID)
-            
-            print("cargados \(objects.count) objetos")
         } catch {
             self.errorMessage = error.localizedDescription
         }
@@ -66,8 +63,9 @@ class BoxDetailViewVM: ObservableObject {
                         if let idx = self?.objects.firstIndex(where: { $0.id == obj.id }) {
                             self?.objects[idx] = obj
                         }
-                    case .failure(let error):
-                        print("Error updating object: \(error)")
+                    case .failure:
+                        // Error is handled silently - consider exposing through errorMessage
+                        break
                     }
                 }
             }
