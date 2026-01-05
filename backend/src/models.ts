@@ -55,6 +55,8 @@ ObjectItem.init({
   sequelize,
   tableName: 'objects',
   timestamps: false,
+  // Add index on boxId for faster lookups when fetching objects by box
+  indexes: [{ fields: ['boxId'] }],
 });
 
 // Relaciones

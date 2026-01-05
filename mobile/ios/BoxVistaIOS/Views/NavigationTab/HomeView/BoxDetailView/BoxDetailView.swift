@@ -26,11 +26,7 @@ struct BoxDetailView: View {
             // Improved button styling
             HStack(spacing: 20) {
                 Button("Borrar") {
-                    // Aquí podrías implementar la lógica para eliminar el objeto
-                    print("Eliminar objeto \("nombre")")
                     showConfirmation = true
-                    //
-                    
                 }
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 12)

@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.Text
@@ -42,29 +43,22 @@ fun HomeScreenView(
             Text("No hay cajas todavía.")
         }
         else -> {
+            // Use items() with the list directly for safe and efficient list handling
+            // This avoids index-based access issues during recomposition
             LazyColumn(
                 modifier = Modifier
                     .padding(4.dp)
                     .fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                state.boxes.forEach { box ->
-                    item { HomeScreenBoxViewBox(box) }
-                }
-
-            }
-
-            LazyColumn(
-                modifier = Modifier
-                    .padding(4.dp)
-                    .fillMaxWidth(),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                item {
-                    state.boxes.forEach { box ->
-                        if (box.objects.isNotEmpty()) {
-                             HomeScreenBoxViewObjects(box.objects)
-                        }
+                items(
+                    items = state.boxes,
+                    key = { box -> box.id ?: 0 }
+                ) { box ->
+                    HomeScreenBoxViewBox(box)
+                    // Show objects inline with each box instead of in a separate LazyColumn
+                    if (box.objects.isNotEmpty()) {
+                        HomeScreenBoxViewObjects(box.objects)
                     }
                 }
             }

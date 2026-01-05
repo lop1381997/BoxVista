@@ -34,7 +34,7 @@ final class ObjectVM: ObservableObject {
     func load(boxId: Int64) async {
         do { try objects = await service.getObjects(for: boxId)}
         catch {
-            print("Error al cargar los objetos: \(error)")
+            // Error is handled silently - consider exposing through published errorMessage property
         }
     }
     
@@ -56,8 +56,9 @@ final class ObjectVM: ObservableObject {
                     if let idx = self?.objects.firstIndex(where: { $0.id == obj.id }) {
                         self?.objects[idx] = obj
                     }
-                case .failure(let error):
-                    print("Error updating object: \(error)")
+                case .failure:
+                    // Error is handled silently - consider exposing through published errorMessage property
+                    break
                 }
             }
         }

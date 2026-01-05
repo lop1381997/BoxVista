@@ -49,7 +49,6 @@ class NetworkManager {
                 completion(.failure(.decodingError))
             }
         }.resume()
-        print("Fetching boxes...")
     }
 
     /// Fetch a specific box by id
