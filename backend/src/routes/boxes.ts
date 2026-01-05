@@ -19,7 +19,6 @@ const boxSchema = z.object({
 // GET all boxes
 router.get('/', async (req, res) => {
   const list = await Box.findAll({ include: 'objetos' });
-  console.log('Boxes list:', list);
   res.json(list);
 });
 
@@ -34,22 +33,23 @@ router.get('/:boxId', async (req, res) => {
 router.post('/', validate(boxSchema), async (req, res) => {
   const { name, description, objetos = [] } = req.body;
   const newBox = await Box.create({ name, description });
+  
   interface ObjInput {
     nombre: string;
     state: boolean;
   }
 
-  interface CreatedObj extends ObjectItem {}
-
-  const createdObjs: CreatedObj[] = await Promise.all(
-    (objetos as ObjInput[]).map((o: ObjInput) =>
-      ObjectItem.create({
-        nombre: o.nombre,
-        state:  o.state,
-        boxId:  newBox.id
-      })
-    )
-  );
+  // Use bulkCreate for better performance when creating multiple objects
+  const createdObjs = objetos.length > 0
+    ? await ObjectItem.bulkCreate(
+        (objetos as ObjInput[]).map((o: ObjInput) => ({
+          nombre: o.nombre,
+          state: o.state,
+          boxId: newBox.id
+        }))
+      )
+    : [];
+  
   newBox.setDataValue('objetos', createdObjs);
   res.status(201).json(newBox);
 });

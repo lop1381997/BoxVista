@@ -1,6 +1,5 @@
 package com.hirlu.boxvista.views.homescreen
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hirlu.boxvista.services.BoxService
@@ -20,55 +19,31 @@ class HomeScreenViewModel(
 
     /** Carga inicial / refresh */
     fun loadBoxes() {
-        Log.e("HomeScreenViewModel", "loadBoxes() iniciado")
+        // Avoid duplicate loads if already loading
+        if (_state.value.isLoading) return
 
-        // Evita dobles cargas si ya está cargando
-        if (_state.value.isLoading) {
-            Log.e("HomeScreenViewModel", "loadBoxes() - Ya está cargando, cancelando")
-            return
-        }
-
-        Log.e("HomeScreenViewModel", "loadBoxes() - Iniciando corrutina")
         viewModelScope.launch {
-            try {
-                Log.e("HomeScreenViewModel", "loadBoxes() - Actualizando estado a loading")
-                _state.update { it.copy(isLoading = true, error = null) }
+            _state.update { it.copy(isLoading = true, error = null) }
 
-                Log.e("HomeScreenViewModel", "loadBoxes() - Llamando a boxService.getBoxes()")
-                runCatching { boxService.getBoxes() }
-                    .onSuccess { boxes ->
-                        Log.e("HomeScreenViewModel", "loadBoxes() - SUCCESS: Boxes recibidas: ${boxes?.size ?: "null"}")
-                        Log.e("HomeScreenViewModel", "loadBoxes() - Boxes content: $boxes")
-                        _state.update {
-                            it.copy(
-                                boxes = boxes ?: emptyList(),
-                                isLoading = false,
-                                error = null
-                            )
-                        }
-                        Log.e("HomeScreenViewModel", "loadBoxes() - Estado actualizado exitosamente")
+            runCatching { boxService.getBoxes() }
+                .onSuccess { boxes ->
+                    _state.update {
+                        it.copy(
+                            boxes = boxes,
+                            isLoading = false,
+                            error = null
+                        )
                     }
-                    .onFailure { e ->
-                        Log.e("HomeScreenViewModel", "loadBoxes() - FAILURE: ${e::class.simpleName}: ${e.message}")
-                        Log.e("HomeScreenViewModel", "loadBoxes() - Stack trace:", e)
-                        _state.update {
-                            it.copy(
-                                isLoading = false,
-                                error = e.message ?: "Unknown error"
-                            )
-                        }
-                    }
-            } catch (e: Exception) {
-                Log.e("HomeScreenViewModel", "loadBoxes() - Exception fuera de runCatching: ${e::class.simpleName}: ${e.message}", e)
-                _state.update {
-                    it.copy(
-                        isLoading = false,
-                        error = "Error inesperado: ${e.message}"
-                    )
                 }
-            }
+                .onFailure { e ->
+                    _state.update {
+                        it.copy(
+                            isLoading = false,
+                            error = e.message ?: "Unknown error"
+                        )
+                    }
+                }
         }
-        Log.e("HomeScreenViewModel", "loadBoxes() - Función terminada")
     }
 
 
