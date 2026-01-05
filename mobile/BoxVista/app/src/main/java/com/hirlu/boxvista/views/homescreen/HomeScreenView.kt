@@ -43,8 +43,8 @@ fun HomeScreenView(
             Text("No hay cajas todavía.")
         }
         else -> {
-            // Use items() instead of forEach to leverage LazyColumn's lazy loading capabilities
-            // This avoids creating all items at once, improving performance for large lists
+            // Use items() with the list directly for safe and efficient list handling
+            // This avoids index-based access issues during recomposition
             LazyColumn(
                 modifier = Modifier
                     .padding(4.dp)
@@ -52,10 +52,9 @@ fun HomeScreenView(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 items(
-                    count = state.boxes.size,
-                    key = { index -> state.boxes[index].id ?: index }
-                ) { index ->
-                    val box = state.boxes[index]
+                    items = state.boxes,
+                    key = { box -> box.id ?: 0 }
+                ) { box ->
                     HomeScreenBoxViewBox(box)
                     // Show objects inline with each box instead of in a separate LazyColumn
                     if (box.objects.isNotEmpty()) {

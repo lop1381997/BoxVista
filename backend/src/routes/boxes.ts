@@ -5,6 +5,12 @@ import { validate } from '../middleware/validate';
 
 const router = Router();
 
+// Type definitions
+interface ObjInput {
+  nombre: string;
+  state: boolean;
+}
+
 // Zod schemas
 const objetoSchema = z.object({
   nombre: z.string().min(1),
@@ -33,11 +39,6 @@ router.get('/:boxId', async (req, res) => {
 router.post('/', validate(boxSchema), async (req, res) => {
   const { name, description, objetos = [] } = req.body;
   const newBox = await Box.create({ name, description });
-  
-  interface ObjInput {
-    nombre: string;
-    state: boolean;
-  }
 
   // Use bulkCreate for better performance when creating multiple objects
   const createdObjs = objetos.length > 0
