@@ -2,23 +2,37 @@ package com.hirlu.boxvista.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-// Colores personalizados para BoxVista (Estética más moderna/oscura)
-val BoxVistaDarkPrimary = Color(0xFF1B263B) // Azul Oscuro Profundo (Primary Dark)
-val BoxVistaDarkSecondary = Color(0xFFB5EEDD) // Verde Menta Claro (Accent)
-val BoxVistaDarkSurface = Color(0xFF262D3A) // Superficie oscura
-val BoxVistaDarkBackground = Color(0xFF121212) // Fondo muy oscuro para Dark Theme
+// Updated colors based on the provided UI design (Dark Theme)
 
-val BoxVistaLightPrimary = Color(0xFF262D3A) // Dark Blue/Grey (Primary Light)
-val BoxVistaLightSecondary = Color(0xFF1B263B) // Deep Blue (Secondary Light)
-val BoxVistaBackground = Color(0xFFF0F0F0) // Fondo claro
-val BoxVistaSurface = Color(0xFFFFFFFF) // Superficie clara
-val BoxVistaAccent = Color(0xFFB5EEDD) // Mismo acento en claro y oscuro
+// Backgrounds
+val BoxVistaDarkBackground = Color(0xFF101418) // Very dark blue/black background
+val BoxVistaDarkSurface = Color(0xFF1E242E) // Card background
+val BoxVistaDarkSurfaceHighlight = Color(0xFF2B3240) // Lighter surface for interaction
 
-// Se mantienen y reasignan los nombres Material 3 para compatibilidad con código existente
-val Purple80 = BoxVistaDarkPrimary
+// Primary & Accents
+val BoxVistaBlue = Color(0xFF2979FF) // Bright Blue (Primary Actions, FAB)
+val BoxVistaRed = Color(0xFFFF5252) // Red (Action Required, Mismatch)
+val BoxVistaGreen = Color(0xFF00E676) // Green (Verified, Warehouse A)
+val BoxVistaYellow = Color(0xFFFFAB40) // Orange/Yellow (Pending, Processing)
+
+// Text
+val BoxVistaWhite = Color(0xFFFFFFFF)
+val BoxVistaGray = Color(0xFF9E9E9E) // Secondary text
+
+// Legacy mapping (keeping these to avoid breaking other parts if any, but re-mapped)
+val BoxVistaDarkPrimary = BoxVistaBlue
+val BoxVistaDarkSecondary = BoxVistaGreen
+
+val BoxVistaLightPrimary = BoxVistaBlue
+val BoxVistaLightSecondary = BoxVistaDarkSurface
+val BoxVistaBackground = BoxVistaDarkBackground // Force Dark for now as requested
+val BoxVistaSurface = BoxVistaDarkSurface
+val BoxVistaAccent = BoxVistaBlue
+
+val Purple80 = BoxVistaBlue
 val PurpleGrey80 = BoxVistaDarkSurface
-val Pink80 = BoxVistaAccent
+val Pink80 = BoxVistaRed
 
-val Purple40 = BoxVistaLightPrimary
-val PurpleGrey40 = BoxVistaLightSecondary
-val Pink40 = BoxVistaAccent
+val Purple40 = BoxVistaBlue
+val PurpleGrey40 = BoxVistaDarkSurface
+val Pink40 = BoxVistaRed
