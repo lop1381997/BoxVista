@@ -2,7 +2,7 @@ package com.hirlu.boxvista
 
 import com.hirlu.boxvista.models.Box
 import com.hirlu.boxvista.models.ObjectItem
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.junit.After
@@ -27,7 +27,7 @@ class NetworkManagerTest {
     }
 
     @Test
-    fun testFetchBoxes() = runBlocking {
+    fun testFetchBoxes() = runTest {
         val mockResponse = MockResponse()
             .setResponseCode(200)
             .setBody("[{\"id\":1,\"name\":\"Test Box\",\"description\":\"Test Description\",\"objetos\":[]}]")
@@ -43,7 +43,7 @@ class NetworkManagerTest {
     }
 
     @Test
-    fun testFetchBox() = runBlocking {
+    fun testFetchBox() = runTest {
         val mockResponse = MockResponse()
             .setResponseCode(200)
             .setBody("{\"id\":1,\"name\":\"Test Box\",\"description\":\"Test Description\",\"objetos\":[]}")
@@ -58,7 +58,7 @@ class NetworkManagerTest {
     }
 
     @Test
-    fun testCreateBox() = runBlocking {
+    fun testCreateBox() = runTest {
         val mockResponse = MockResponse()
             .setResponseCode(201)
             .setBody("{\"id\":1,\"name\":\"Test Box\",\"description\":\"Test Description\",\"objetos\":[]}")
@@ -73,7 +73,7 @@ class NetworkManagerTest {
     }
 
     @Test
-    fun testDeleteBox() = runBlocking {
+    fun testDeleteBox() = runTest {
         val mockResponse = MockResponse()
             .setResponseCode(204)
         mockWebServer.enqueue(mockResponse)
@@ -85,7 +85,7 @@ class NetworkManagerTest {
     }
 
     @Test
-    fun testUpdateBox() = runBlocking {
+    fun testUpdateBox() = runTest {
         val mockResponse = MockResponse()
             .setResponseCode(200)
             .setBody("{\"id\":1,\"name\":\"Test Box\",\"description\":\"Test Description\",\"objetos\":[]}")
@@ -100,7 +100,7 @@ class NetworkManagerTest {
     }
 
     @Test
-    fun testFetchObjects() = runBlocking {
+    fun testFetchObjects() = runTest {
         val mockResponse = MockResponse()
             .setResponseCode(200)
             .setBody("[{\"id\":1,\"nombre\":\"Test Object\",\"state\":true,\"boxId\":1}]")
@@ -116,7 +116,7 @@ class NetworkManagerTest {
     }
 
     @Test
-    fun testFetchObject() = runBlocking {
+    fun testFetchObject() = runTest {
         val mockResponse = MockResponse()
             .setResponseCode(200)
             .setBody("{\"id\":1,\"nombre\":\"Test Object\",\"state\":true,\"boxId\":1}")
@@ -131,7 +131,7 @@ class NetworkManagerTest {
     }
 
     @Test
-    fun testCreateObject() = runBlocking {
+    fun testCreateObject() = runTest {
         val mockResponse = MockResponse()
             .setResponseCode(201)
             .setBody("{\"id\":1,\"nombre\":\"Test Object\",\"state\":true,\"boxId\":1}")
@@ -146,7 +146,7 @@ class NetworkManagerTest {
     }
 
     @Test
-    fun testUpdateObject() = runBlocking {
+    fun testUpdateObject() = runTest {
         val mockResponse = MockResponse()
             .setResponseCode(200)
             .setBody("{\"id\":1,\"nombre\":\"Test Object\",\"state\":true,\"boxId\":1}")
@@ -161,7 +161,7 @@ class NetworkManagerTest {
     }
 
     @Test
-    fun testDeleteObject() = runBlocking {
+    fun testDeleteObject() = runTest {
         val mockResponse = MockResponse()
             .setResponseCode(204)
         mockWebServer.enqueue(mockResponse)

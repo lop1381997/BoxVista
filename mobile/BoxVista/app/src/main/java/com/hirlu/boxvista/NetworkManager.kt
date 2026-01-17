@@ -1,6 +1,5 @@
 package com.hirlu.boxvista
 
-import android.util.Log
 import com.hirlu.boxvista.models.Box
 import com.hirlu.boxvista.models.BoxDTO
 import com.hirlu.boxvista.models.ObjectItem
@@ -79,39 +78,20 @@ object NetworkManager {
     }
 
     fun init(baseUrl: String) {
-        try {
-            this.api = Retrofit.Builder()
-                .baseUrl(baseUrl)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build()
-                .create(ApiService::class.java)
-        } catch (e: Exception) {
-            throw e
-        }
+        this.api = Retrofit.Builder()
+            .baseUrl(baseUrl)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(ApiService::class.java)
     }
 
-    private fun requireApi(): ApiService {
-        val apiInstance = api
-        if (apiInstance == null) {
-            throw IllegalStateException("NetworkManager no inicializado. Llama a NetworkManager.init(baseUrl) al inicio de la app.")
-        }
-        return apiInstance
-    }
+    private fun requireApi(): ApiService =
+        api ?: throw IllegalStateException("NetworkManager no inicializado. Llama a NetworkManager.init(baseUrl) al inicio de la app.")
 
     // ──────────────────────── Métodos públicos suspend ─────────────────────────
-    suspend fun fetchBoxes(): List<Box> {
-        return try {
-            val apiInstance = requireApi()
-            val boxDTOs = apiInstance.fetchBoxes()
-            val result = boxDTOs.map { dto ->
-                val domainBox = dto.toDomain()
-                domainBox
-            }
-            result
-        } catch (e: Exception) {
-            throw e
-        }
-    }
+    // Network exceptions (HttpException/IOException) propagate to the UI/VM layer for handling
+    suspend fun fetchBoxes(): List<Box> =
+        requireApi().fetchBoxes().map { it.toDomain() }
 
     suspend fun fetchBox(id: Long): Box = requireApi().fetchBox(id).toDomain()
 
