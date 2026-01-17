@@ -95,16 +95,17 @@ fun HomeScreenView(
                 }
 
                 // Listado de cajas
-                state.boxes.forEach { box ->
-                    item {
-                        HomeScreenBoxView(
-                            box = box,
-                            onClick = {
-                                selectedBox = box
-                                showDetail = true
-                            }
-                        )
-                    }
+                items(
+                    items = state.boxes,
+                    key = { box -> box.id }
+                ) { box ->
+                    HomeScreenBoxView(
+                        box = box,
+                        onClick = {
+                            selectedBox = box
+                            showDetail = true
+                        }
+                    )
                 }
 
                 // Espaciador entre secciones
@@ -119,10 +120,11 @@ fun HomeScreenView(
                 }
 
                 // Listado de objetos
-                state.boxes.forEach { box ->
-                    if (box.objects.isNotEmpty()) {
-                        item { HomeScreenBoxViewObjects(box.objects) }
-                    }
+                items(
+                    items = state.boxes.filter { it.objects.isNotEmpty() },
+                    key = { box -> "objects-${box.id}" }
+                ) { box ->
+                    HomeScreenBoxViewObjects(box.objects)
                 }
             }
         }
@@ -273,8 +275,11 @@ fun HomeScreenViewWithDataPreview() {
             Spacer(modifier = Modifier.padding(4.dp))
         }
 
-        boxes.forEach { box ->
-            item { HomeScreenBoxView(box) }
+        items(
+            items = boxes,
+            key = { box -> box.id }
+        ) { box ->
+            HomeScreenBoxView(box)
         }
 
         item {
@@ -286,10 +291,11 @@ fun HomeScreenViewWithDataPreview() {
             Spacer(modifier = Modifier.padding(4.dp))
         }
 
-        boxes.forEach { box ->
-            if (box.objects.isNotEmpty()) {
-                item { HomeScreenBoxViewObjects(box.objects) }
-            }
+        items(
+            items = boxes.filter { it.objects.isNotEmpty() },
+            key = { box -> "objects-${box.id}" }
+        ) { box ->
+            HomeScreenBoxViewObjects(box.objects)
         }
     }
 }
