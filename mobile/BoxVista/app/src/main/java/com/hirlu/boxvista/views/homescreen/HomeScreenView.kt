@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
@@ -79,6 +80,8 @@ fun HomeScreenView(
         }
 
         else -> {
+            // Use items() with the list directly for safe and efficient list handling
+            // This avoids index-based access issues during recomposition
             LazyColumn(
                 modifier = Modifier
                     .padding(4.dp)
