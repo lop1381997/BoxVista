@@ -14,7 +14,6 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Icon
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
@@ -22,16 +21,18 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.hirlu.boxvista.ui.theme.BoxVistaTheme
+import com.hirlu.boxvista.views.addbox.AddBoxScreen
 import com.hirlu.boxvista.views.homescreen.HomeScreenView
 import kotlinx.coroutines.launch
-
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -54,9 +55,11 @@ fun TabScreen() {
             "Add Box" to Icons.Filled.Add
         )
 
-        var selectedTabIndex: Int by remember { mutableIntStateOf(0) }
+        var selectedTabIndex by remember { mutableIntStateOf(0) }
+        var refreshHomeKey by remember { mutableStateOf(0) }
         val pagerState = rememberPagerState(pageCount = { tabItems.size })
         val scope = rememberCoroutineScope()
+
         Scaffold(
             bottomBar = {
                 TabRow(selectedTabIndex = selectedTabIndex) {
@@ -79,25 +82,16 @@ fun TabScreen() {
                 modifier = Modifier.padding(paddingValues)
             ) { page ->
                 when (page) {
-                    0 -> HomeScreenView()
-                    1 -> FavoritesScreen()
-                    2 -> SettingsScreen()
+                    0 -> HomeScreenView(refreshTrigger = refreshHomeKey)
+                    1 -> SettingsScreen()
+                    2 -> AddBoxScreen(onBoxCreated = {
+                        refreshHomeKey++
+                        selectedTabIndex = 0
+                        scope.launch { pagerState.animateScrollToPage(0) }
+                    })
                 }
             }
         }
-    }
-}
-
-
-
-
-
-
-
-@Composable
-fun FavoritesScreen() {
-    Column(modifier = Modifier.padding(16.dp)) {
-        Text("Favorites Screen Content")
     }
 }
 
@@ -108,12 +102,8 @@ fun SettingsScreen() {
     }
 }
 
-
-
-
 @Preview(showBackground = true)
 @Composable
 fun TabScreenPreview() {
     TabScreen()
-
 }
