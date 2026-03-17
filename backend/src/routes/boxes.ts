@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { z } from 'zod';
 import { Box, ObjectItem } from '../models';
 import { validate } from '../middleware/validate';
+import { requireAuth } from '../middleware/auth';
 
 const router = Router();
 
@@ -36,7 +37,7 @@ router.get('/:boxId', async (req, res) => {
 });
 
 // POST create box + its objetos
-router.post('/', validate(boxSchema), async (req, res) => {
+router.post('/', requireAuth, validate(boxSchema), async (req, res) => {
   const { name, description, objetos = [] } = req.body;
   const newBox = await Box.create({ name, description });
 
@@ -56,7 +57,7 @@ router.post('/', validate(boxSchema), async (req, res) => {
 });
 
 // PUT update box (no update de objetos aquí)
-router.put('/:boxId', validate(boxSchema), async (req, res) => {
+router.put('/:boxId', requireAuth, validate(boxSchema), async (req, res) => {
   const box = await Box.findByPk(req.params.boxId);
   if (!box) return res.status(404).json({ message: 'Box not found' });
   await box.update(req.body);
@@ -64,7 +65,7 @@ router.put('/:boxId', validate(boxSchema), async (req, res) => {
 });
 
 // DELETE box (cascade elimina objetos)
-router.delete('/:boxId', async (req, res) => {
+router.delete('/:boxId', requireAuth, async (req, res) => {
   const box = await Box.findByPk(req.params.boxId);
   if (!box) return res.status(404).json({ message: 'Box not found' });
   await box.destroy();
