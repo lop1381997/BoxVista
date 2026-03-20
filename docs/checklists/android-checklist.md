@@ -21,7 +21,8 @@ Fuente base: `tasks.md` + inspección de `mobile/BoxVista/*`.
 
 ## Pendiente priorizado (orden recomendado)
 - [x] Login real contra backend (`POST /auth/login`) + almacenamiento seguro de token. _(2026-03-20: `NetworkManager.login`, `auth/SecureTokenStorage`, tests `NetworkManagerTest#testLogin` y `AuthRepositoryTest`)_
-- [ ] Crear caja desde UI (flujo completo con validaciones y manejo de errores).
+- [x] Crear caja desde UI (flujo completo con validaciones y manejo de errores).  
+  Evidencia: `views/createbox/CreateBoxScreen.kt` (bloqueo de botón sin tipo), `views/createbox/CreateBoxViewModel.kt` (mapeo de errores de red/HTTP), `CreateBoxViewModelTest` (caso de red).
 - [ ] Escaneo QR real (cámara + navegación a detalle por UUID).
 - [ ] Integración NFC/RFID básica (`NfcAdapter`) con fallback seguro.
 - [ ] Flujo de verificación con subida multipart de fotos (`/cajas/{uuid}/verificar`).
@@ -39,3 +40,4 @@ Fuente base: `tasks.md` + inspección de `mobile/BoxVista/*`.
 
 ## Registro incremental de automatización
 - 2026-03-16: checklist inicial creada.
+- 2026-03-20: cerrada tarea “Crear caja desde UI” con validaciones/manejo de errores y test de red en ViewModel.

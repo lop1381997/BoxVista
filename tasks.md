@@ -1,5 +1,18 @@
 ## BoxVista – Lista de Tareas
 
+## 🔁 Plan de ejecución continua (Cron)
+
+> Este bloque gobierna el trabajo autónomo por cron en `BoxVista/`.
+> Archivo operativo: `BoxVista/CRON_PLAN.md`.
+> Registro incremental: `BoxVista/docs/cron-progress.md`.
+
+- [x] Plan maestro cron creado (`CRON_PLAN.md`)
+- [x] Registro de avances cron creado (`docs/cron-progress.md`)
+- [ ] Flujo principal MVP cerrado extremo a extremo (crear caja → verificar → conciliación → historial → app iOS)
+- [ ] Android MVP en paridad mínima con iOS
+- [ ] Endurecimiento (tests integrales + CI básica + documentación técnica de operación)
+
+
 ### Fase 1: Preparación y diseño general
 
 - [x] Definir requisitos funcionales y no funcionales
@@ -79,21 +92,22 @@
   - [ ] Empezar con modelo genérico (YOLOv5 preentrenado).
   - [ ] Instalar dependencias (PyTorch, OpenCV).
   - [ ] Probar inferencia local con imágenes de ejemplo.
-  - [ ] Crear endpoint interno `/vision/detect` para recibir rutas de imágenes y devolver lista de objetos detectados.
-- [ ] Comparación con lista esperada (MVP manual)
-  - [ ] En tabla **Caja-Objeto**, permitir ingreso manual de lista esperada al crear caja.
-  - [ ] Implementar `services/conciliacion.py` para comparar lista esperada vs. lista detectada.
-  - [ ] Endpoint `/cajas/{uuid}/verificar` devuelve:
-    - [ ] `objetos_detectados`
-    - [ ] `objetos_esperados`
-    - [ ] `faltantes`
-    - [ ] `sobrantes`
+  - [x] Crear endpoint interno `/vision/detect` para recibir rutas de imágenes y devolver lista de objetos detectados.
+- [x] Comparación con lista esperada (MVP manual)
+  - [x] En tabla **Caja-Objeto**, permitir ingreso manual de lista esperada al crear caja.
+  - [x] Implementar `services/conciliacion.py` para comparar lista esperada vs. lista detectada.
+  - [x] Endpoint `/cajas/{uuid}/verificar` devuelve:
+    - [x] `objetos_detectados`
+    - [x] `objetos_esperados`
+    - [x] `faltantes`
+    - [x] `sobrantes`
 - [x] Guardar registro en historial
   - [x] Cada llamada a `/cajas/{uuid}/verificar` crea un registro en **HistorialEventos** con:
     - [x] `tipo_evento = “verificacion_contenido”`
     - [x] `detalles` (listas de faltantes/sobrantes, usuario).
   - [x] Endpoint GET `/cajas/{uuid}/historial`.
 - [ ] Probar flujo completo vía Postman/Insomnia
+  - [x] Test E2E automatizado (backend): crear caja → verificar → historial.
   - [ ] Crear caja.
   - [ ] Definir manualmente lista esperada.
   - [ ] Subir fotos, llamar a IA, recibir diferencias.
@@ -118,8 +132,8 @@
     - [x] Eliminar objetos sobrantes.
 - [ ] Función “Crear Caja”
   - [ ] Pantalla para elegir “Tipo de caja” (picker con valores hardcodeados).
-  - [ ] Botón “Crear” llama a POST `/cajas`, recibe UUID.
-  - [ ] Mostrar pantalla de confirmación con UUID y opción de “Imprimir etiqueta” (mostrar UUID para QR).
+  - [x] Botón “Crear” llama a POST `/cajas`, recibe UUID.
+  - [x] Mostrar pantalla de confirmación con UUID y opción de “Imprimir etiqueta” (mostrar UUID para QR).
 - [ ] Escaneo de RFID/QR
   - **QR**
     - [ ] Usar `AVCaptureSession` para detectar QR en cámara.
@@ -127,10 +141,10 @@
   - **RFID/NFC**
     - [ ] Usar `CoreNFC` para leer tags compatibles.
     - [ ] Extraer UUID y redirigir a detalle de caja.
-- [ ] Pantalla de Detalle de Caja
-  - [ ] Mostrar metadatos: UUID, tipo, ubicación, estado.
-  - [ ] Lista estática de “objetos esperados” (inicialmente vacía).
-  - [ ] Botón “Verificar Contenido” para iniciar flujo de captura de fotos.
+- [x] Pantalla de Detalle de Caja
+  - [x] Mostrar metadatos: UUID, tipo, ubicación, estado.
+  - [x] Lista estática de “objetos esperados” (inicialmente vacía).
+  - [x] Botón “Verificar Contenido” para iniciar flujo de captura de fotos.
 - [x] Asistente de Captura de Fotos
   - [x] Pantalla con instrucción breve para tomar fotos.
   - [x] Botón para abrir cámara y tomar 1–3 fotos (`UIImagePickerController` o API de cámara).
@@ -140,8 +154,8 @@
 - [ ] Llamada a backend para verificación
   - [ ] Al tocar “Subir y Verificar”:
     - [ ] Empaquetar imágenes en multipart/form-data junto con token JWT.
-    - [ ] Llamar a POST `/cajas/{uuid}/verificar`.
-    - [ ] Procesar respuesta JSON: objetos detectados, faltantes, sobrantes.
+    - [x] Llamar a POST `/cajas/{uuid}/verificar`.
+    - [x] Procesar respuesta JSON: objetos detectados, faltantes, sobrantes.
   - [ ] Si hay faltantes o sobrantes:
     - [ ] Mostrar alerta con detalles.
     - [ ] Opciones: “Confirmar manualmente” o “Marcar como verificado de todas formas”.
@@ -198,10 +212,10 @@
   - [ ] RecyclerView para listar cajas (GET `/cajas`).
   - [ ] Mostrar UUID parcial, estado con color, fecha última verificación.
   - [ ] Botón flotante “Crear nueva caja”.
-- [ ] Función “Crear Caja”
-  - [ ] Actividad para elegir “Tipo de caja” (Spinner).
-  - [ ] Al tocar “Crear”, llamar POST `/cajas` y recibir UUID.
-  - [ ] Mostrar diálogo con UUID y opción “Mostrar QR”.
+- [x] Función “Crear Caja”
+  - [x] Actividad para elegir “Tipo de caja” (Spinner).
+  - [x] Al tocar “Crear”, llamar POST `/cajas` y recibir UUID.
+  - [x] Mostrar diálogo con UUID y opción “Mostrar QR” (MVP actual: muestra UUID/ID creado en diálogo de confirmación).
 - [ ] Escaneo de RFID/QR
   - **QR**
     - [ ] Integrar cámara y ZXing para detectar código.
