@@ -14,9 +14,12 @@ export const app = express();
 app.use(cors());
 app.use(bodyParser.json());
 
+app.use('/auth', authRouter);
 app.use('/api/auth', authRouter);
 app.use('/api/boxes', boxesRouter);
+app.use('/api/cajas', boxesRouter);
 app.use('/api/boxes/:boxId/objects', objectsRouter);
+app.use('/api/cajas/:boxId/objetos', objectsRouter);
 
 export const initDatabase = async (force = false): Promise<void> => {
   await sequelize.sync({ force });

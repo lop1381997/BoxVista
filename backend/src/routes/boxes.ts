@@ -23,6 +23,10 @@ const boxSchema = z.object({
   objetos:     z.array(objetoSchema).optional(),
 });
 
+const ubicacionSchema = z.object({
+  ubicacion: z.string().min(1),
+});
+
 // GET all boxes
 router.get('/', async (req, res) => {
   const list = await Box.findAll({ include: 'objetos' });
@@ -61,6 +65,14 @@ router.put('/:boxId', requireAuth, validate(boxSchema), async (req, res) => {
   const box = await Box.findByPk(req.params.boxId);
   if (!box) return res.status(404).json({ message: 'Box not found' });
   await box.update(req.body);
+  res.json(box);
+});
+
+router.put('/:boxId/ubicacion', requireAuth, validate(ubicacionSchema), async (req, res) => {
+  const box = await Box.findByPk(req.params.boxId);
+  if (!box) return res.status(404).json({ message: 'Box not found' });
+
+  await box.update({ ubicacion: req.body.ubicacion });
   res.json(box);
 });
 

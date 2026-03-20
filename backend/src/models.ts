@@ -6,6 +6,7 @@ export class Box extends Model {
   public id!: number;
   public name!: string;
   public description!: string;
+  public ubicacion?: string;
   public readonly objetos?: ObjectItem[];
 }
 Box.init({
@@ -19,6 +20,10 @@ Box.init({
   },
   description: {
     type: DataTypes.TEXT, allowNull: false
+  },
+  ubicacion: {
+    type: DataTypes.STRING,
+    allowNull: true,
   },
 }, {
   sequelize,

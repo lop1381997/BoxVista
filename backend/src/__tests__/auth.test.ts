@@ -29,7 +29,7 @@ test('register + login returns a JWT token', async () => {
   const email = 'auth.user@example.com';
   const password = 'StrongPass123!';
 
-  const registerRes = await fetch(`${baseUrl}/api/auth/register`, {
+  const registerRes = await fetch(`${baseUrl}/auth/register`, {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
     body: JSON.stringify({ email, password }),
@@ -39,7 +39,7 @@ test('register + login returns a JWT token', async () => {
   const registerBody = await registerRes.json() as { token?: string };
   assert.ok(registerBody.token);
 
-  const loginRes = await fetch(`${baseUrl}/api/auth/login`, {
+  const loginRes = await fetch(`${baseUrl}/auth/login`, {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
     body: JSON.stringify({ email, password }),
@@ -48,6 +48,15 @@ test('register + login returns a JWT token', async () => {
   assert.equal(loginRes.status, 200);
   const loginBody = await loginRes.json() as { token?: string };
   assert.ok(loginBody.token);
+
+  // backwards compatibility for mobile clients already using /api/auth
+  const loginViaApiPrefix = await fetch(`${baseUrl}/api/auth/login`, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ email, password }),
+  });
+
+  assert.equal(loginViaApiPrefix.status, 200);
 });
 
 test('protected write endpoint rejects missing token and accepts valid token', async () => {

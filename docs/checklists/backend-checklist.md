@@ -25,7 +25,7 @@ Fuente base: `tasks.md` + inspección de `backend/src/*`.
 
 ## Pendiente priorizado (orden recomendado)
 - [x] Autenticación real para MVP (`/auth/register`, `/auth/login`, JWT middleware usable). ✅ 2026-03-17: implementado en `backend/src/routes/auth.ts` + `backend/src/middleware/auth.ts`, aplicado a escrituras en `routes/boxes.ts`; test `backend/src/__tests__/auth.test.ts` (register/login + protección con Bearer token).
-- [ ] Endpoint de actualización de ubicación alineado con requisitos (`PUT /cajas/{uuid}/ubicacion` o equivalente estable).
+- [x] Endpoint de actualización de ubicación alineado con requisitos (`PUT /cajas/{uuid}/ubicacion` o equivalente estable). ✅ 2026-03-20: implementado `PUT /api/cajas/:boxId/ubicacion` (alias estable) en `backend/src/routes/boxes.ts`, con alias en `backend/src/app.ts` y persistencia de `ubicacion` en `backend/src/models.ts`; test de contrato `backend/src/__tests__/box-location.test.ts`.
 - [ ] Paginación + filtros robustos en listado de cajas (estado/tipo/ubicación/fecha) con tests.
 - [ ] Contrato estable `cajas/*` (nombres y payloads) para paridad con apps móviles.
 - [ ] Subida multipart real de imágenes en verificación (actualmente flujo simplificado) con validación de tamaño/tipo.
