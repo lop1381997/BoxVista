@@ -7,6 +7,7 @@ import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 
@@ -24,6 +25,22 @@ class NetworkManagerTest {
     @After
     fun tearDown() {
         mockWebServer.shutdown()
+    }
+
+    @Test
+    fun testLogin() = runTest {
+        val mockResponse = MockResponse()
+            .setResponseCode(200)
+            .setBody("{\"token\":\"jwt-token-123\"}")
+        mockWebServer.enqueue(mockResponse)
+
+        val token = NetworkManager.login("test@example.com", "secret")
+        val request = mockWebServer.takeRequest()
+
+        assertEquals("jwt-token-123", token)
+        assertEquals("POST", request.method)
+        assertEquals("/auth/login", request.path)
+        assertTrue(request.body.readUtf8().contains("\"email\":\"test@example.com\""))
     }
 
     @Test

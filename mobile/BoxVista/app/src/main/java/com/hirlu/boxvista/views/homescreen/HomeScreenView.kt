@@ -97,7 +97,7 @@ fun HomeScreenView(
                 // Listado de cajas
                 items(
                     items = state.boxes,
-                    key = { box -> box.id }
+                    key = { box -> box.id ?: "box-${box.name}" }
                 ) { box ->
                     HomeScreenBoxView(
                         box = box,
@@ -277,7 +277,7 @@ fun HomeScreenViewWithDataPreview() {
 
         items(
             items = boxes,
-            key = { box -> box.id }
+            key = { box -> box.id ?: "box-${box.name}" }
         ) { box ->
             HomeScreenBoxView(box)
         }

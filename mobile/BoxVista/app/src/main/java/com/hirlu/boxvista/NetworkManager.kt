@@ -2,6 +2,8 @@ package com.hirlu.boxvista
 
 import com.hirlu.boxvista.models.Box
 import com.hirlu.boxvista.models.BoxDTO
+import com.hirlu.boxvista.models.LoginRequest
+import com.hirlu.boxvista.models.LoginResponse
 import com.hirlu.boxvista.models.ObjectItem
 import com.hirlu.boxvista.models.ObjectItemDTO
 import retrofit2.Retrofit
@@ -29,6 +31,9 @@ object NetworkManager {
 
     // ───────────────────────────── API ─────────────────────────────
     private interface ApiService {
+        @POST("auth/login")
+        suspend fun login(@Body body: LoginRequest): LoginResponse
+
         @GET("boxes")
         suspend fun fetchBoxes(): List<BoxDTO>
 
@@ -90,6 +95,9 @@ object NetworkManager {
 
     // ──────────────────────── Métodos públicos suspend ─────────────────────────
     // Network exceptions (HttpException/IOException) propagate to the UI/VM layer for handling
+    suspend fun login(email: String, password: String): String =
+        requireApi().login(LoginRequest(email = email, password = password)).token
+
     suspend fun fetchBoxes(): List<Box> =
         requireApi().fetchBoxes().map { it.toDomain() }
 
