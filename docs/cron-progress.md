@@ -124,3 +124,33 @@
 - Next:
   - Implementar siguiente prioridad Android: “Login real contra backend (`POST /auth/login`) + almacenamiento seguro de token”.
   - Incluir tests de ViewModel para errores 401/403 y red caída.
+
+## 2026-03-20 20:08 (Europe/Madrid)
+- Focus: P2 Android – Login real (`POST /auth/login`) + token seguro
+- Done:
+  - Añadido soporte de login en `NetworkManager` con DTOs (`LoginRequest`, `LoginResponse`).
+  - Implementado `AuthService` para autenticación contra backend.
+  - Implementado `SecureTokenStore` con `EncryptedSharedPreferences` + `MasterKey` (almacenamiento seguro de token).
+  - Añadida pantalla de login real en pestaña Settings (`LoginScreen`) con campos email/contraseña, estados loading/error y cierre de sesión.
+  - Añadido `LoginViewModel` con validaciones y mapeo de errores de red/credenciales.
+  - Añadidos tests unitarios de login (200, 401 y red caída).
+  - Actualizado tracking en `tasks.md` y `docs/checklists/android-checklist.md`.
+- Files:
+  - `mobile/BoxVista/app/src/main/java/com/hirlu/boxvista/models/Auth.kt`
+  - `mobile/BoxVista/app/src/main/java/com/hirlu/boxvista/NetworkManager.kt`
+  - `mobile/BoxVista/app/src/main/java/com/hirlu/boxvista/services/AuthService.kt`
+  - `mobile/BoxVista/app/src/main/java/com/hirlu/boxvista/services/TokenStore.kt`
+  - `mobile/BoxVista/app/src/main/java/com/hirlu/boxvista/views/login/LoginScreen.kt`
+  - `mobile/BoxVista/app/src/main/java/com/hirlu/boxvista/views/login/LoginViewModel.kt`
+  - `mobile/BoxVista/app/src/main/java/com/hirlu/boxvista/MainActivity.kt`
+  - `mobile/BoxVista/app/src/main/java/com/hirlu/boxvista/views/homescreen/HomeScreenView.kt`
+  - `mobile/BoxVista/app/src/test/java/com/hirlu/boxvista/views/login/LoginViewModelTest.kt`
+  - `mobile/BoxVista/app/build.gradle.kts`
+  - `tasks.md`
+  - `docs/checklists/android-checklist.md`
+- Validation:
+  - `cd mobile/BoxVista && ./gradlew testDebugUnitTest --no-daemon` ✅
+  - `cd mobile/BoxVista && ./gradlew lintDebug --no-daemon` ✅
+- Next:
+  - Siguiente prioridad Android: escaneo QR real (cámara + navegación por UUID).
+  - Como endurecimiento: mover inyección de `LoginViewModel` a factory reutilizable para no crearla inline en `MainActivity`.

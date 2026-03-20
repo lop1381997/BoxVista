@@ -203,11 +203,11 @@
     - [ ] Cliente HTTP (Retrofit + OkHttp).
     - [ ] JSON serialization (Gson o Moshi).
     - [ ] Soporte NFC para RFID (si el tag es compatible).
-- [ ] Implementar pantalla de login
-  - [ ] Actividad/Fragment con campos “correo” y “contraseña”.
-  - [ ] Con Retrofit, llamar POST `/auth/login`.
-  - [ ] Guardar token JWT en `SharedPreferences`.
-  - [ ] Manejar errores de red y credenciales.
+- [x] Implementar pantalla de login
+  - [x] Actividad/Fragment con campos “correo” y “contraseña”.
+  - [x] Con Retrofit, llamar POST `/auth/login`.
+  - [x] Guardar token JWT en almacenamiento seguro (`EncryptedSharedPreferences`).
+  - [x] Manejar errores de red y credenciales.
 - [ ] Pantalla principal (Dashboard)
   - [ ] RecyclerView para listar cajas (GET `/cajas`).
   - [ ] Mostrar UUID parcial, estado con color, fecha última verificación.

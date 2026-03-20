@@ -20,7 +20,8 @@ Fuente base: `tasks.md` + inspección de `mobile/BoxVista/*`.
   - `app/src/androidTest/...`
 
 ## Pendiente priorizado (orden recomendado)
-- [x] Login real contra backend (`POST /auth/login`) + almacenamiento seguro de token. _(2026-03-20: `NetworkManager.login`, `auth/SecureTokenStorage`, tests `NetworkManagerTest#testLogin` y `AuthRepositoryTest`)_
+- [x] Login real contra backend (`POST /auth/login`) + almacenamiento seguro de token.  
+  Evidencia: `views/login/LoginScreen.kt`, `views/login/LoginViewModel.kt`, `services/AuthService.kt`, `services/TokenStore.kt`, `NetworkManager.kt`, `LoginViewModelTest` (200/401/red caída).
 - [x] Crear caja desde UI (flujo completo con validaciones y manejo de errores).  
   Evidencia: `views/createbox/CreateBoxScreen.kt` (bloqueo de botón sin tipo), `views/createbox/CreateBoxViewModel.kt` (mapeo de errores de red/HTTP), `CreateBoxViewModelTest` (caso de red).
 - [ ] Escaneo QR real (cámara + navegación a detalle por UUID).
@@ -41,3 +42,4 @@ Fuente base: `tasks.md` + inspección de `mobile/BoxVista/*`.
 ## Registro incremental de automatización
 - 2026-03-16: checklist inicial creada.
 - 2026-03-20: cerrada tarea “Crear caja desde UI” con validaciones/manejo de errores y test de red en ViewModel.
+- 2026-03-20: cerrada tarea “Login real + token seguro” con `POST /auth/login`, `EncryptedSharedPreferences` y tests de ViewModel (200/401/red caída).
