@@ -20,6 +20,7 @@ import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
@@ -46,7 +47,10 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        NetworkManager.init()
+
+        val tokenStore = SecureTokenStore(applicationContext)
+        NetworkManager.init(tokenProvider = tokenStore::getToken)
+
         setContent {
             TabScreen()
         }
@@ -57,6 +61,29 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun TabScreen() {
     BoxVistaTheme {
+        val context = LocalContext.current
+        val loginViewModel: LoginViewModel = viewModel(
+            factory = object : ViewModelProvider.Factory {
+                @Suppress("UNCHECKED_CAST")
+                override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                    return LoginViewModel(
+                        authService = AuthService(),
+                        tokenStore = SecureTokenStore(context.applicationContext)
+                    ) as T
+                }
+            }
+        )
+
+        val loginState by loginViewModel.state.collectAsState()
+        androidx.compose.runtime.LaunchedEffect(Unit) {
+            loginViewModel.loadExistingSession()
+        }
+
+        if (!loginState.isLoggedIn) {
+            LoginScreen(viewModel = loginViewModel)
+            return@BoxVistaTheme
+        }
+
         val tabItems: List<Pair<String, ImageVector>> = listOf(
             "Home" to Icons.Filled.Home,
             "Crear caja" to Icons.Filled.Add,
@@ -90,7 +117,7 @@ fun TabScreen() {
                 when (page) {
                     0 -> HomeScreenView()
                     1 -> CreateBoxScreen()
-                    2 -> SettingsScreen()
+                    2 -> SettingsScreen(loginViewModel)
                 }
             }
         }
@@ -111,20 +138,7 @@ fun FavoritesScreen() {
 }
 
 @Composable
-fun SettingsScreen() {
-    val context = LocalContext.current
-    val loginViewModel: LoginViewModel = viewModel(
-        factory = object : ViewModelProvider.Factory {
-            @Suppress("UNCHECKED_CAST")
-            override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                return LoginViewModel(
-                    authService = AuthService(),
-                    tokenStore = SecureTokenStore(context.applicationContext)
-                ) as T
-            }
-        }
-    )
-
+fun SettingsScreen(loginViewModel: LoginViewModel) {
     LoginScreen(viewModel = loginViewModel)
 }
 

@@ -6,6 +6,7 @@ import com.hirlu.boxvista.models.LoginRequest
 import com.hirlu.boxvista.models.LoginResponse
 import com.hirlu.boxvista.models.ObjectItem
 import com.hirlu.boxvista.models.ObjectItemDTO
+import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.Body
@@ -77,14 +78,37 @@ object NetworkManager {
     // ───────────────────── Retrofit (sin OkHttp explícito) ─────────────────────
 
     @Volatile private var api: ApiService? = null
+    @Volatile private var authTokenProvider: (() -> String?)? = null
 
-    fun init(baseUrl: BaseURL = BaseURL.LOCAL) {
-        init(baseUrl.url)
+    fun init(baseUrl: BaseURL = BaseURL.LOCAL, tokenProvider: (() -> String?)? = null) {
+        init(baseUrl.url, tokenProvider)
     }
 
-    fun init(baseUrl: String) {
+    fun init(baseUrl: String, tokenProvider: (() -> String?)? = null) {
+        this.authTokenProvider = tokenProvider
+
+        val client = OkHttpClient.Builder()
+            .addInterceptor { chain ->
+                val original = chain.request()
+                val path = original.url.encodedPath
+                val token = authTokenProvider?.invoke()?.trim().orEmpty()
+
+                val needsAuth = !path.endsWith("/auth/login")
+                val request = if (needsAuth && token.isNotEmpty()) {
+                    original.newBuilder()
+                        .header("Authorization", "Bearer $token")
+                        .build()
+                } else {
+                    original
+                }
+
+                chain.proceed(request)
+            }
+            .build()
+
         this.api = Retrofit.Builder()
             .baseUrl(baseUrl)
+            .client(client)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
             .create(ApiService::class.java)
