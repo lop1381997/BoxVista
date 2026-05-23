@@ -2,6 +2,7 @@ package com.hirlu.boxvista.views.homescreen
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.hirlu.boxvista.NetworkManager
 import com.hirlu.boxvista.services.BoxService
 import com.hirlu.boxvista.services.BoxServiceProtocol
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -23,7 +24,7 @@ class HomeScreenViewModel(
         if (_state.value.isLoading) return
 
         viewModelScope.launch {
-            _state.update { it.copy(isLoading = true, error = null) }
+            _state.update { it.copy(isLoading = true, error = null, requiresAuth = false) }
 
             runCatching { boxService.getBoxes() }
                 .onSuccess { boxes ->
@@ -31,15 +32,18 @@ class HomeScreenViewModel(
                         it.copy(
                             boxes = boxes,
                             isLoading = false,
-                            error = null
+                            error = null,
+                            requiresAuth = false,
                         )
                     }
                 }
                 .onFailure { e ->
+                    val requiresAuth = e is NetworkManager.UnauthorizedException
                     _state.update {
                         it.copy(
                             isLoading = false,
-                            error = e.message ?: "Unknown error"
+                            error = e.message ?: "Unknown error",
+                            requiresAuth = requiresAuth,
                         )
                     }
                 }

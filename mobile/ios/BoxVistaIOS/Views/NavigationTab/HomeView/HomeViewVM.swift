@@ -27,7 +27,11 @@ class HomeViewVM: ObservableObject {
         do {
             boxes = try await service.getBoxes()
         } catch {
-            errorMessage = "Error cargando boxes: \(error.localizedDescription)"
+            if let apiError = error as? APIError, case .unauthorized = apiError {
+                errorMessage = "Inicia sesión o regístrate en Settings para ver tus cajas."
+            } else {
+                errorMessage = "Error cargando boxes: \(error.localizedDescription)"
+            }
         }
         isLoading = false
     }

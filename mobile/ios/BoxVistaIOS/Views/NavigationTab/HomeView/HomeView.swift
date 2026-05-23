@@ -19,6 +19,13 @@ struct HomeView: View {
     var body: some View {
         NavigationStack {
             List {
+                if let errorMessage = vm.errorMessage {
+                    Section {
+                        Label(errorMessage, systemImage: "exclamationmark.triangle.fill")
+                            .foregroundStyle(.red)
+                    }
+                }
+
                 Section("Cajas") {
                     ForEach(vm.boxes) { box in
                         NavigationLink(value: box) {

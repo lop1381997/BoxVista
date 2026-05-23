@@ -78,4 +78,70 @@ test('protected write endpoint rejects missing token and accepts valid token', a
   });
 
   assert.equal(authorizedCreate.status, 201);
+  const createdBox = await authorizedCreate.json() as { id: number; userId: number };
+  assert.ok(createdBox.userId);
+});
+
+test('boxes are scoped to the authenticated user', async () => {
+  const firstRegisterRes = await fetch(`${baseUrl}/api/auth/register`, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ email: 'first.owner@example.com', password: 'StrongPass123!' }),
+  });
+  const firstRegisterBody = await firstRegisterRes.json() as { token: string };
+
+  const secondRegisterRes = await fetch(`${baseUrl}/api/auth/register`, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ email: 'second.owner@example.com', password: 'StrongPass123!' }),
+  });
+  const secondRegisterBody = await secondRegisterRes.json() as { token: string };
+
+  const createRes = await fetch(`${baseUrl}/api/boxes`, {
+    method: 'POST',
+    headers: {
+      'content-type': 'application/json',
+      authorization: `Bearer ${firstRegisterBody.token}`,
+    },
+    body: JSON.stringify({
+      name: 'Caja privada',
+      description: 'Solo la ve su usuario',
+      objetos: [{ nombre: 'Objeto privado', state: true }],
+    }),
+  });
+
+  assert.equal(createRes.status, 201);
+  const createdBox = await createRes.json() as { id: number; userId: number; objetos: Array<{ id: number }> };
+  assert.ok(createdBox.id);
+  assert.ok(createdBox.userId);
+
+  const firstListRes = await fetch(`${baseUrl}/api/boxes`, {
+    headers: { authorization: `Bearer ${firstRegisterBody.token}` },
+  });
+  assert.equal(firstListRes.status, 200);
+  const firstList = await firstListRes.json() as Array<{ id: number }>;
+  assert.equal(firstList.some((box) => box.id === createdBox.id), true);
+
+  const secondListRes = await fetch(`${baseUrl}/api/boxes`, {
+    headers: { authorization: `Bearer ${secondRegisterBody.token}` },
+  });
+  assert.equal(secondListRes.status, 200);
+  const secondList = await secondListRes.json() as Array<{ id: number }>;
+  assert.equal(secondList.some((box) => box.id === createdBox.id), false);
+
+  const secondReadRes = await fetch(`${baseUrl}/api/boxes/${createdBox.id}`, {
+    headers: { authorization: `Bearer ${secondRegisterBody.token}` },
+  });
+  assert.equal(secondReadRes.status, 404);
+
+  const objectId = createdBox.objetos[0].id;
+  const secondObjectUpdateRes = await fetch(`${baseUrl}/api/boxes/${createdBox.id}/objects/${objectId}`, {
+    method: 'PUT',
+    headers: {
+      'content-type': 'application/json',
+      authorization: `Bearer ${secondRegisterBody.token}`,
+    },
+    body: JSON.stringify({ nombre: 'Intento ajeno', state: false }),
+  });
+  assert.equal(secondObjectUpdateRes.status, 404);
 });

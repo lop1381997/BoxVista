@@ -149,5 +149,15 @@ struct UpdateBox: View {
 }
 
 #Preview {
-    AddBox(selectedTab: .constant(0))
+    UpdateBox(
+        box: Box(
+            id: 1,
+            name: "Caja de prueba",
+            description: "Descripción de prueba",
+            objects: [
+                ObjectItem(id: 1, nombre: "Objeto 1", state: true, boxId: 1),
+                ObjectItem(id: 2, nombre: "Objeto 2", state: false, boxId: 1)
+            ]
+        )
+    )
 }

@@ -20,10 +20,12 @@ class NetworkManagerTest {
         mockWebServer = MockWebServer()
         mockWebServer.start()
         NetworkManager.init(mockWebServer.url("/").toString())
+        NetworkManager.setAuthTokenProvider { "jwt-token-123" }
     }
 
     @After
     fun tearDown() {
+        NetworkManager.clearAuthTokenProvider()
         mockWebServer.shutdown()
     }
 
@@ -44,6 +46,22 @@ class NetworkManagerTest {
     }
 
     @Test
+    fun testRegister() = runTest {
+        val mockResponse = MockResponse()
+            .setResponseCode(201)
+            .setBody("{\"token\":\"jwt-token-456\"}")
+        mockWebServer.enqueue(mockResponse)
+
+        val token = NetworkManager.register("new@example.com", "password123")
+        val request = mockWebServer.takeRequest()
+
+        assertEquals("jwt-token-456", token)
+        assertEquals("POST", request.method)
+        assertEquals("/auth/register", request.path)
+        assertTrue(request.body.readUtf8().contains("\"email\":\"new@example.com\""))
+    }
+
+    @Test
     fun testFetchBoxes() = runTest {
         val mockResponse = MockResponse()
             .setResponseCode(200)
@@ -51,12 +69,14 @@ class NetworkManagerTest {
         mockWebServer.enqueue(mockResponse)
 
         val result = NetworkManager.fetchBoxes()
+        val request = mockWebServer.takeRequest()
 
         assertEquals(1, result.size)
         assertEquals(1L, result[0].id)
         assertEquals("Test Box", result[0].name)
         assertEquals("Test Description", result[0].description)
         assertEquals(0, result[0].objects.size)
+        assertEquals("Bearer jwt-token-123", request.getHeader("Authorization"))
     }
 
     @Test

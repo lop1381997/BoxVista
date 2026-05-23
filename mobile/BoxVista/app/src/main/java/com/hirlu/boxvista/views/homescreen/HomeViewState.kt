@@ -5,7 +5,8 @@ import com.hirlu.boxvista.models.Box
 data class HomeViewState(
     val boxes: List<Box> = emptyList(),
     val isLoading: Boolean = false,
-    val error: String? = null
+    val error: String? = null,
+    val requiresAuth: Boolean = false,
 ) {
     val isEmpty: Boolean get() = boxes.isEmpty() && !isLoading && error == null
 }

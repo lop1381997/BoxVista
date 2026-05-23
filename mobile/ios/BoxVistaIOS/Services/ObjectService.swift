@@ -8,12 +8,6 @@
 
 import Foundation
 
-/// Payload para actualizar un objeto
-private struct UpdatePayload: Codable {
-    let nombre: String
-    let state: Bool
-}
-
 /// Protocolo para servicios de objetos
 protocol ObjectServiceProtocol {
     /// URL base de la API (ej: http://localhost:3000/api)
@@ -63,64 +57,14 @@ extension ObjectServiceProtocol {
     ///   - boxId: Identificador de la caja
     ///   - completion: Closure que recibe el resultado de la operación
     func updateObject(_ object: ObjectItem, boxId: Int64, completion: @escaping (Result<ObjectItem, Error>) -> Void) {
-        let url = baseURL
-            .appendingPathComponent("boxes")
-            .appendingPathComponent("\(boxId)")
-            .appendingPathComponent("objects")
-            .appendingPathComponent("\(object.id)")
-        
-        var request = URLRequest(url: url)
-        request.httpMethod = "PUT"
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        
-        // Create the update payload with proper types
-        let updateData = UpdatePayload(nombre: object.nombre, state: object.state)
-        
-        do {
-            let encoder = JSONEncoder()
-            encoder.keyEncodingStrategy = .convertToSnakeCase
-            request.httpBody = try encoder.encode(updateData)
-        } catch {
-            completion(.failure(error))
-            return
+        NetworkManager.shared.updateObject(object, in: boxId) { result in
+            switch result {
+            case .success(let object):
+                completion(.success(object))
+            case .failure(let error):
+                completion(.failure(error))
+            }
         }
-        
-        // Perform asynchronous request
-        URLSession.shared.dataTask(with: request) { data, response, error in
-            if let error = error {
-                completion(.failure(error))
-                return
-            }
-            
-            // Check for HTTP errors
-            if let httpResponse = response as? HTTPURLResponse {
-                guard httpResponse.statusCode == 200 else {
-                    let error = NSError(domain: "ObjectService", code: httpResponse.statusCode, userInfo: [
-                        NSLocalizedDescriptionKey: "Failed to update object. Status code: \(httpResponse.statusCode)"
-                    ])
-                    completion(.failure(error))
-                    return
-                }
-            }
-            
-            guard let data = data else {
-                let error = NSError(domain: "ObjectService", code: 0, userInfo: [
-                    NSLocalizedDescriptionKey: "No data received"
-                ])
-                completion(.failure(error))
-                return
-            }
-            
-            // Decode the response
-            do {
-                let decoder = JSONDecoder()
-                decoder.keyDecodingStrategy = .convertFromSnakeCase
-                let dto = try decoder.decode(ObjectDTO.self, from: data)
-                completion(.success(dto.toObjectItem()))
-            } catch {
-                completion(.failure(error))
-            }
-        }.resume()
     }
 }
 

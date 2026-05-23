@@ -27,7 +27,7 @@ class BoxDetailViewVM: ObservableObject {
             self.box = fetchedBox
             self.objects = try await objectService.getObjects(for: boxID)
         } catch {
-            self.errorMessage = error.localizedDescription
+            self.errorMessage = message(for: error)
         }
     }
 
@@ -46,7 +46,7 @@ class BoxDetailViewVM: ObservableObject {
             try await boxService.deleteBox(box: currentBox)
             return true
         } catch {
-            self.errorMessage = error.localizedDescription
+            self.errorMessage = message(for: error)
             return false
         }
     }
@@ -70,4 +70,11 @@ class BoxDetailViewVM: ObservableObject {
                 }
             }
         }
+
+    private func message(for error: Error) -> String {
+        if let apiError = error as? APIError, case .unauthorized = apiError {
+            return "Inicia sesión o regístrate en Settings."
+        }
+        return error.localizedDescription
+    }
 }

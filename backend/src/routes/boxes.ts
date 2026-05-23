@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { z } from 'zod';
 import { Box, ObjectItem } from '../models';
 import { validate } from '../middleware/validate';
-import { requireAuth } from '../middleware/auth';
+import { AuthenticatedRequest, requireAuth } from '../middleware/auth';
 
 const router = Router();
 
@@ -19,27 +19,33 @@ const objetoSchema = z.object({
 });
 const boxSchema = z.object({
   name:        z.string().min(1),
-  description: z.string().min(1),
+  description: z.string(),
   objetos:     z.array(objetoSchema).optional(),
 });
 
-// GET all boxes
-router.get('/', async (req, res) => {
-  const list = await Box.findAll({ include: 'objetos' });
+// GET all boxes owned by the authenticated user
+router.get('/', requireAuth, async (req: AuthenticatedRequest, res) => {
+  const userId = req.auth!.userId;
+  const list = await Box.findAll({ where: { userId }, include: 'objetos' });
   res.json(list);
 });
 
-// GET one box
-router.get('/:boxId', async (req, res) => {
-  const box = await Box.findByPk(req.params.boxId, { include: 'objetos' });
+// GET one box owned by the authenticated user
+router.get('/:boxId', requireAuth, async (req: AuthenticatedRequest, res) => {
+  const userId = req.auth!.userId;
+  const box = await Box.findOne({
+    where: { id: req.params.boxId, userId },
+    include: 'objetos',
+  });
   if (!box) return res.status(404).json({ message: 'Box not found' });
   res.json(box);
 });
 
 // POST create box + its objetos
-router.post('/', requireAuth, validate(boxSchema), async (req, res) => {
+router.post('/', requireAuth, validate(boxSchema), async (req: AuthenticatedRequest, res) => {
+  const userId = req.auth!.userId;
   const { name, description, objetos = [] } = req.body;
-  const newBox = await Box.create({ name, description });
+  const newBox = await Box.create({ name, description, userId });
 
   // Use bulkCreate for better performance when creating multiple objects
   const createdObjs = objetos.length > 0
@@ -57,16 +63,19 @@ router.post('/', requireAuth, validate(boxSchema), async (req, res) => {
 });
 
 // PUT update box (no update de objetos aquí)
-router.put('/:boxId', requireAuth, validate(boxSchema), async (req, res) => {
-  const box = await Box.findByPk(req.params.boxId);
+router.put('/:boxId', requireAuth, validate(boxSchema), async (req: AuthenticatedRequest, res) => {
+  const userId = req.auth!.userId;
+  const box = await Box.findOne({ where: { id: req.params.boxId, userId } });
   if (!box) return res.status(404).json({ message: 'Box not found' });
-  await box.update(req.body);
+  const { name, description } = req.body;
+  await box.update({ name, description });
   res.json(box);
 });
 
 // DELETE box (cascade elimina objetos)
-router.delete('/:boxId', requireAuth, async (req, res) => {
-  const box = await Box.findByPk(req.params.boxId);
+router.delete('/:boxId', requireAuth, async (req: AuthenticatedRequest, res) => {
+  const userId = req.auth!.userId;
+  const box = await Box.findOne({ where: { id: req.params.boxId, userId } });
   if (!box) return res.status(404).json({ message: 'Box not found' });
   await box.destroy();
   res.status(204).send();

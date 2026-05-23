@@ -7,11 +7,40 @@
 
 import Foundation
 
-enum APIError: Error {
+enum APIError: Error, LocalizedError {
     case invalidURL
     case invalidResponse
     case decodingError
-    case serverError(Int)
+    case unauthorized(String?)
+    case serverError(Int, String?)
+
+    var errorDescription: String? {
+        switch self {
+        case .invalidURL:
+            return "URL inválida"
+        case .invalidResponse:
+            return "Respuesta inválida del servidor"
+        case .decodingError:
+            return "No se pudo procesar la respuesta del servidor"
+        case .unauthorized(let message):
+            return message ?? "Sesión no iniciada o caducada"
+        case .serverError(let code, let message):
+            return message ?? "Error del servidor (código \(code))"
+        }
+    }
+}
+
+private struct AuthRequest: Encodable {
+    let email: String
+    let password: String
+}
+
+private struct AuthResponse: Decodable {
+    let token: String
+}
+
+private struct APIErrorResponse: Decodable {
+    let message: String?
 }
 
 class NetworkManager {
@@ -28,14 +57,95 @@ class NetworkManager {
         return e
     }()
 
+    // MARK: - Auth
+
+    func login(email: String,
+               password: String,
+               completion: @escaping (Result<String, APIError>) -> Void) {
+        authenticate(path: "auth/login", email: email, password: password, completion: completion)
+    }
+
+    func register(email: String,
+                  password: String,
+                  completion: @escaping (Result<String, APIError>) -> Void) {
+        authenticate(path: "auth/register", email: email, password: password, completion: completion)
+    }
+
+    func login(email: String, password: String) async throws -> String {
+        try await withCheckedThrowingContinuation { continuation in
+            login(email: email, password: password) { result in
+                switch result {
+                case .success(let token):
+                    continuation.resume(returning: token)
+                case .failure(let error):
+                    continuation.resume(throwing: error)
+                }
+            }
+        }
+    }
+
+    func register(email: String, password: String) async throws -> String {
+        try await withCheckedThrowingContinuation { continuation in
+            register(email: email, password: password) { result in
+                switch result {
+                case .success(let token):
+                    continuation.resume(returning: token)
+                case .failure(let error):
+                    continuation.resume(throwing: error)
+                }
+            }
+        }
+    }
+
+    private func authenticate(path: String,
+                              email: String,
+                              password: String,
+                              completion: @escaping (Result<String, APIError>) -> Void) {
+        let url = baseURL.appendingPathComponent(path)
+        var req = URLRequest(url: url)
+        req.httpMethod = "POST"
+        req.setValue("application/json", forHTTPHeaderField: "Content-Type")
+
+        do {
+            req.httpBody = try encoder.encode(AuthRequest(email: email, password: password))
+        } catch {
+            return completion(.failure(.decodingError))
+        }
+
+        URLSession.shared.dataTask(with: req) { data, resp, err in
+            if err != nil {
+                return completion(.failure(.invalidResponse))
+            }
+            if let error = self.apiError(from: data, response: resp) {
+                return completion(.failure(error))
+            }
+            guard let data = data else {
+                return completion(.failure(.invalidResponse))
+            }
+            do {
+                let authResponse = try self.decoder.decode(AuthResponse.self, from: data)
+                AuthTokenStore.shared.token = authResponse.token
+                completion(.success(authResponse.token))
+            } catch {
+                completion(.failure(.decodingError))
+            }
+        }.resume()
+    }
+
     // MARK: - Boxes CRUD
 
     /// Fetch all boxes using DTO mapping
     func fetchBoxes(completion: @escaping (Result<[Box], APIError>) -> Void) {
         let url = baseURL.appendingPathComponent("boxes")
-        URLSession.shared.dataTask(with: url) { data, resp, err in
-            if let code = (resp as? HTTPURLResponse)?.statusCode, code >= 400 {
-                return completion(.failure(.serverError(code)))
+        var req = URLRequest(url: url)
+        addAuthHeader(to: &req)
+
+        URLSession.shared.dataTask(with: req) { data, resp, err in
+            if err != nil {
+                return completion(.failure(.invalidResponse))
+            }
+            if let error = self.apiError(from: data, response: resp) {
+                return completion(.failure(error))
             }
             guard let data = data else {
                 return completion(.failure(.invalidResponse))
@@ -54,9 +164,15 @@ class NetworkManager {
     /// Fetch a specific box by id
     func fetchBox(id: Int64, completion: @escaping (Result<Box, APIError>) -> Void) {
         let url = baseURL.appendingPathComponent("boxes/\(id)")
-        URLSession.shared.dataTask(with: url) { data, resp, err in
-            if let code = (resp as? HTTPURLResponse)?.statusCode, code >= 400 {
-                return completion(.failure(.serverError(code)))
+        var req = URLRequest(url: url)
+        addAuthHeader(to: &req)
+
+        URLSession.shared.dataTask(with: req) { data, resp, err in
+            if err != nil {
+                return completion(.failure(.invalidResponse))
+            }
+            if let error = self.apiError(from: data, response: resp) {
+                return completion(.failure(error))
             }
             guard let data = data else {
                 return completion(.failure(.invalidResponse))
@@ -79,6 +195,7 @@ class NetworkManager {
         var req = URLRequest(url: url)
         req.httpMethod = "POST"
         req.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        addAuthHeader(to: &req)
 
         // Build request payload from domain objects
         let payload = [
@@ -97,8 +214,11 @@ class NetworkManager {
         }
 
         URLSession.shared.dataTask(with: req) { data, resp, err in
-            if let code = (resp as? HTTPURLResponse)?.statusCode, code >= 400 {
-                return completion(.failure(.serverError(code)))
+            if err != nil {
+                return completion(.failure(.invalidResponse))
+            }
+            if let error = self.apiError(from: data, response: resp) {
+                return completion(.failure(error))
             }
             guard let data = data else {
                 return completion(.failure(.invalidResponse))
@@ -119,6 +239,7 @@ class NetworkManager {
         var req = URLRequest(url: url)
         req.httpMethod = "PUT"
         req.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        addAuthHeader(to: &req)
 
         // Build payload similarly to create
         let payload = [
@@ -137,8 +258,11 @@ class NetworkManager {
         }
 
         URLSession.shared.dataTask(with: req) { data, resp, err in
-            if let code = (resp as? HTTPURLResponse)?.statusCode, code >= 400 {
-                return completion(.failure(.serverError(code)))
+            if err != nil {
+                return completion(.failure(.invalidResponse))
+            }
+            if let error = self.apiError(from: data, response: resp) {
+                return completion(.failure(error))
             }
             guard let data = data else {
                 return completion(.failure(.invalidResponse))
@@ -157,9 +281,13 @@ class NetworkManager {
         let url = baseURL.appendingPathComponent("boxes/\(id)")
         var req = URLRequest(url: url)
         req.httpMethod = "DELETE"
-        URLSession.shared.dataTask(with: req) { _, resp, _ in
-            if let code = (resp as? HTTPURLResponse)?.statusCode, code >= 400 {
-                return completion(.failure(.serverError(code)))
+        addAuthHeader(to: &req)
+        URLSession.shared.dataTask(with: req) { data, resp, err in
+            if err != nil {
+                return completion(.failure(.invalidResponse))
+            }
+            if let error = self.apiError(from: data, response: resp) {
+                return completion(.failure(error))
             }
             completion(.success(()))
         }.resume()
@@ -171,9 +299,15 @@ class NetworkManager {
     func fetchObjects(for boxId: Int64,
                       completion: @escaping (Result<[ObjectItem], APIError>) -> Void) {
         let url = baseURL.appendingPathComponent("boxes/\(boxId)/objects")
-        URLSession.shared.dataTask(with: url) { data, resp, err in
-            if let code = (resp as? HTTPURLResponse)?.statusCode, code >= 400 {
-                return completion(.failure(.serverError(code)))
+        var req = URLRequest(url: url)
+        addAuthHeader(to: &req)
+
+        URLSession.shared.dataTask(with: req) { data, resp, err in
+            if err != nil {
+                return completion(.failure(.invalidResponse))
+            }
+            if let error = self.apiError(from: data, response: resp) {
+                return completion(.failure(error))
             }
             guard let data = data else {
                 return completion(.failure(.invalidResponse))
@@ -196,6 +330,7 @@ class NetworkManager {
         var req = URLRequest(url: url)
         req.httpMethod = "POST"
         req.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        addAuthHeader(to: &req)
 
         let payload = [
             "nombre": obj.nombre,
@@ -209,8 +344,11 @@ class NetworkManager {
         }
 
         URLSession.shared.dataTask(with: req) { data, resp, err in
-            if let code = (resp as? HTTPURLResponse)?.statusCode, code >= 400 {
-                return completion(.failure(.serverError(code)))
+            if err != nil {
+                return completion(.failure(.invalidResponse))
+            }
+            if let error = self.apiError(from: data, response: resp) {
+                return completion(.failure(error))
             }
             guard let data = data else {
                 return completion(.failure(.invalidResponse))
@@ -232,6 +370,7 @@ class NetworkManager {
         var req = URLRequest(url: url)
         req.httpMethod = "PUT"
         req.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        addAuthHeader(to: &req)
 
         let payload = [
             "nombre": obj.nombre,
@@ -245,8 +384,11 @@ class NetworkManager {
         }
 
         URLSession.shared.dataTask(with: req) { data, resp, err in
-            if let code = (resp as? HTTPURLResponse)?.statusCode, code >= 400 {
-                return completion(.failure(.serverError(code)))
+            if err != nil {
+                return completion(.failure(.invalidResponse))
+            }
+            if let error = self.apiError(from: data, response: resp) {
+                return completion(.failure(error))
             }
             guard let data = data else {
                 return completion(.failure(.invalidResponse))
@@ -267,11 +409,46 @@ class NetworkManager {
         let url = baseURL.appendingPathComponent("boxes/\(boxId)/objects/\(id)")
         var req = URLRequest(url: url)
         req.httpMethod = "DELETE"
-        URLSession.shared.dataTask(with: req) { _, resp, _ in
-            if let code = (resp as? HTTPURLResponse)?.statusCode, code >= 400 {
-                return completion(.failure(.serverError(code)))
+        addAuthHeader(to: &req)
+        URLSession.shared.dataTask(with: req) { data, resp, err in
+            if err != nil {
+                return completion(.failure(.invalidResponse))
+            }
+            if let error = self.apiError(from: data, response: resp) {
+                return completion(.failure(error))
             }
             completion(.success(()))
         }.resume()
+    }
+
+    private func addAuthHeader(to request: inout URLRequest) {
+        guard let token = AuthTokenStore.shared.token, !token.isEmpty else {
+            return
+        }
+        request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+    }
+
+    private func apiError(from data: Data?, response: URLResponse?) -> APIError? {
+        guard let code = (response as? HTTPURLResponse)?.statusCode, code >= 400 else {
+            return nil
+        }
+
+        let message = responseMessage(from: data)
+        if code == 401 {
+            return .unauthorized(message)
+        }
+        return .serverError(code, message)
+    }
+
+    private func responseMessage(from data: Data?) -> String? {
+        guard let data, !data.isEmpty else { return nil }
+
+        if let errorResponse = try? decoder.decode(APIErrorResponse.self, from: data),
+           let message = errorResponse.message,
+           !message.isEmpty {
+            return message
+        }
+
+        return String(data: data, encoding: .utf8)
     }
 }

@@ -33,6 +33,8 @@ import com.hirlu.boxvista.views.homescreen.components.HomeScreenBoxViewObjects
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreenView(
+    sessionVersion: Int = 0,
+    onOpenAuth: () -> Unit = {},
     viewModel: HomeScreenViewModel = viewModel())
 {
     val state by viewModel.state.collectAsState()
@@ -42,7 +44,7 @@ fun HomeScreenView(
     val sheetState = rememberModalBottomSheetState()
     val scope = rememberCoroutineScope()
 
-    LaunchedEffect(Unit) { viewModel.loadBoxes() }
+    LaunchedEffect(sessionVersion) { viewModel.loadBoxes() }
 
     if (showDetail && selectedBox != null){
         ModalBottomSheet(
@@ -71,6 +73,9 @@ fun HomeScreenView(
         state.error != null -> {
             Column {
                 Text("Error: ${state.error}")
+                if (state.requiresAuth) {
+                    Button(onClick = onOpenAuth) { Text("Iniciar sesión") }
+                }
                 Button(onClick = viewModel::retry) { Text("Reintentar") }
             }
         }

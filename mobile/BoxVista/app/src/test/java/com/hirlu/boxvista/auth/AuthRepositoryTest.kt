@@ -13,6 +13,7 @@ class AuthRepositoryTest {
         val repository = AuthRepository(
             tokenStorage = storage,
             loginCall = { _, _ -> "jwt-token-123" },
+            registerCall = { _, _ -> "ignored" },
         )
 
         val token = repository.login("test@example.com", "secret")
@@ -22,11 +23,27 @@ class AuthRepositoryTest {
     }
 
     @Test
+    fun `register stores returned token`() = runTest {
+        val storage = FakeTokenStorage()
+        val repository = AuthRepository(
+            tokenStorage = storage,
+            loginCall = { _, _ -> "ignored" },
+            registerCall = { _, _ -> "jwt-token-456" },
+        )
+
+        val token = repository.register("new@example.com", "password123")
+
+        assertEquals("jwt-token-456", token)
+        assertEquals("jwt-token-456", repository.getStoredToken())
+    }
+
+    @Test
     fun `logout clears token`() {
         val storage = FakeTokenStorage(initialToken = "jwt-token-123")
         val repository = AuthRepository(
             tokenStorage = storage,
             loginCall = { _, _ -> "ignored" },
+            registerCall = { _, _ -> "ignored" },
         )
 
         repository.logout()

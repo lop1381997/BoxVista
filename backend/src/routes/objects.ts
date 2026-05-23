@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { z } from 'zod';
 import { Box, ObjectItem } from '../models';
 import { validate } from '../middleware/validate';
+import { AuthenticatedRequest, requireAuth } from '../middleware/auth';
 
 const router = Router({ mergeParams: true });
 
@@ -10,16 +11,22 @@ const objetoSchema = z.object({
   state:  z.boolean(),
 });
 
+const findOwnedBox = (boxId: string, userId: number, includeObjects = false) =>
+  Box.findOne({
+    where: { id: boxId, userId },
+    include: includeObjects ? 'objetos' : undefined,
+  });
+
 // GET objetos for a box
-router.get('/', async (req, res) => {
-  const box = await Box.findByPk((req.params as any).boxId, { include: 'objetos' });
+router.get('/', requireAuth, async (req: AuthenticatedRequest, res) => {
+  const box = await findOwnedBox((req.params as any).boxId, req.auth!.userId, true);
   if (!box) return res.status(404).json({ message: 'Box not found' });
   res.json(box.objetos);
 });
 
 // POST new objeto
-router.post('/', validate(objetoSchema), async (req, res) => {
-  const box = await Box.findByPk((req.params as any).boxId);
+router.post('/', requireAuth, validate(objetoSchema), async (req: AuthenticatedRequest, res) => {
+  const box = await findOwnedBox((req.params as any).boxId, req.auth!.userId);
   if (!box) return res.status(404).json({ message: 'Box not found' });
   const obj = await ObjectItem.create({
     nombre: req.body.nombre,
@@ -30,7 +37,10 @@ router.post('/', validate(objetoSchema), async (req, res) => {
 });
 
 // PUT update objeto
-router.put('/:objectId', validate(objetoSchema), async (req, res) => {
+router.put('/:objectId', requireAuth, validate(objetoSchema), async (req: AuthenticatedRequest, res) => {
+  const box = await findOwnedBox((req.params as any).boxId, req.auth!.userId);
+  if (!box) return res.status(404).json({ message: 'Box not found' });
+
   const obj = await ObjectItem.findOne({
     where: { id: req.params.objectId, boxId: (req.params as any).boxId }
   });
@@ -40,7 +50,10 @@ router.put('/:objectId', validate(objetoSchema), async (req, res) => {
 });
 
 // DELETE objeto
-router.delete('/:objectId', async (req, res) => {
+router.delete('/:objectId', requireAuth, async (req: AuthenticatedRequest, res) => {
+  const box = await findOwnedBox((req.params as any).boxId, req.auth!.userId);
+  if (!box) return res.status(404).json({ message: 'Box not found' });
+
   const obj = await ObjectItem.findOne({
     where: { id: req.params.objectId, boxId: (req.params as any).boxId }
   });

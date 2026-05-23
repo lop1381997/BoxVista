@@ -64,8 +64,10 @@ class BoxVM: ObservableObject {
                 return "Error de comunicación con el servidor"
             case .decodingError:
                 return "Error al procesar la respuesta del servidor"
-            case .serverError(let code):
-                return "Error del servidor (código \(code))"
+            case .unauthorized:
+                return "Inicia sesión o regístrate en Settings antes de guardar una caja."
+            case .serverError(let code, let message):
+                return message ?? "Error del servidor (código \(code))"
             }
         }
         return "Error desconocido: \(error.localizedDescription)"
